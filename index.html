@@ -381,7 +381,6 @@ function renderNew(el) {
     <div id="subject-rows">`;
     subjects.forEach(s => { html += renderSubjectRow(s); });
     html += `</div>
-    <button class="add-subject-btn" onclick="addSubject()" style="margin-top:4px;margin-bottom:20px">&#＋; Add Subject</button>
     <button class="add-subject-btn" onclick="addSubject()" style="margin-top:4px;margin-bottom:20px">+ Add Subject</button>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="newStep=1;render()">&larr; Back</button>
