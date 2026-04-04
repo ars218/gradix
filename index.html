@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradix</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #040810;
+    --bg-navy: #070d1c;
+    --bg-mid: #0b1428;
+    --accent: #4f9eff;
+    --accent-bright: #70b4ff;
+    --accent-glow: rgba(79,158,255,0.25);
+    --accent-glow-soft: rgba(79,158,255,0.1);
+    --glass-bg: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --glass-hover: rgba(255,255,255,0.07);
+    --text-primary: #e8f0fe;
+    --text-secondary: rgba(200,215,245,0.65);
+    --text-muted: rgba(150,175,220,0.4);
+    --red: #ff5a7e;
+    --green: #3dffa0;
+    --yellow: #ffd060;
+    --orange: #ff9a45;
+    --purple: #b87fff;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(30,60,140,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(20,40,120,0.3) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 60% 30%, rgba(79,158,255,0.06) 0%, transparent 50%),
+      linear-gradient(160deg, #040810 0%, #070d1c 40%, #0b1428 100%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  #app { position: relative; z-index: 1; min-height: 100vh; }
+
+  .header {
+    padding: 20px 24px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(4,8,16,0.6);
+    backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px; font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .logo span { -webkit-text-fill-color: var(--accent); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px; border-radius: 50px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: var(--transition); border: none; outline: none;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 20px var(--accent-glow), 0 4px 15px rgba(79,158,255,0.3);
+  }
+  .btn-primary:hover { background: var(--accent-bright); box-shadow: 0 0 30px rgba(79,158,255,0.5), 0 6px 20px rgba(79,158,255,0.4); transform: translateY(-1px); }
+  .btn-ghost {
+    background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary);
+  }
+  .btn-ghost:hover { background: var(--glass-hover); color: var(--text-primary); border-color: rgba(255,255,255,0.14); }
+  .btn-danger { background: rgba(255,90,126,0.12); border: 1px solid rgba(255,90,126,0.25); color: var(--red); }
+  .btn-danger:hover { background: rgba(255,90,126,0.2); }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
+  .btn-icon { padding: 8px; border-radius: 10px; }
+
+  .main { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .dash-title { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700; color: var(--text-primary); }
+  .dash-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 3px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+
+  .card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 22px;
+    cursor: pointer;
+    transition: var(--transition);
+    backdrop-filter: blur(12px);
+    position: relative; overflow: hidden;
+    animation: cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(79,158,255,0.04), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .card:hover { border-color: rgba(79,158,255,0.25); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow-soft); }
+  .card:hover::before { opacity: 1; }
+  @keyframes cardIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  .card-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--text-primary); }
+  .card-pct { font-family: 'Sora', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; margin-bottom: 4px; background: linear-gradient(135deg, #fff, var(--accent-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .card-marks { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-meta { font-size: 12px; color: var(--text-muted); }
+
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .badge-Aplus { background: rgba(61,255,160,0.15); color: var(--green); border: 1px solid rgba(61,255,160,0.25); }
+  .badge-A { background: rgba(79,158,255,0.15); color: var(--accent-bright); border: 1px solid rgba(79,158,255,0.25); }
+  .badge-B { background: rgba(184,127,255,0.15); color: var(--purple); border: 1px solid rgba(184,127,255,0.25); }
+  .badge-C { background: rgba(255,208,96,0.12); color: var(--yellow); border: 1px solid rgba(255,208,96,0.2); }
+  .badge-D { background: rgba(255,154,69,0.12); color: var(--orange); border: 1px solid rgba(255,154,69,0.2); }
+  .badge-E { background: rgba(255,90,126,0.1); color: #ff8fa7; border: 1px solid rgba(255,90,126,0.2); }
+  .badge-F { background: rgba(255,90,126,0.15); color: var(--red); border: 1px solid rgba(255,90,126,0.3); }
+
+  .empty {
+    grid-column: 1/-1; text-align: center; padding: 80px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .empty-icon { font-size: 56px; opacity: 0.3; }
+  .empty-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: var(--text-secondary); }
+  .empty-sub { font-size: 14px; color: var(--text-muted); max-width: 300px; line-height: 1.6; }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(4,8,16,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .modal {
+    background: linear-gradient(145deg, #0d1830, #0a1225);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    width: 100%; max-width: 640px; max-height: 90vh;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(79,158,255,0.08);
+    animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    scrollbar-width: thin; scrollbar-color: rgba(79,158,255,0.2) transparent;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(24px) scale(0.98); } to { opacity:1; transform:none; } }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .modal-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
+  .close-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); cursor: pointer; font-size: 18px; transition: var(--transition); flex-shrink: 0; }
+  .close-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
+
+  .steps { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--glass-border); transition: var(--transition); }
+  .step-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); width: 24px; border-radius: 4px; }
+  .step-dot.done { background: rgba(79,158,255,0.4); }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 0.3px; }
+  .form-input {
+    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 15px;
+    outline: none; transition: var(--transition);
+  }
+  .form-input:focus { border-color: rgba(79,158,255,0.5); background: rgba(79,158,255,0.05); box-shadow: 0 0 0 3px rgba(79,158,255,0.08); }
+  .form-input::placeholder { color: var(--text-muted); }
+  select.form-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234f9eff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  select.form-input option { background: #0d1830; }
+
+  .subject-row {
+    display: grid; grid-template-columns: 1fr 90px 90px 34px;
+    gap: 8px; align-items: end; margin-bottom: 10px;
+    animation: cardIn 0.25s ease both;
+  }
+  .remove-btn { width: 34px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); background: rgba(255,90,126,0.08); border: 1px solid rgba(255,90,126,0.15); color: var(--red); cursor: pointer; font-size: 15px; transition: var(--transition); flex-shrink: 0; }
+  .remove-btn:hover { background: rgba(255,90,126,0.18); }
+
+  .add-subject-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: var(--radius-sm);
+    background: rgba(79,158,255,0.06); border: 1px dashed rgba(79,158,255,0.25);
+    color: var(--accent); font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: var(--transition); width: 100%; justify-content: center;
+    font-family: 'Outfit', sans-serif;
+  }
+  .add-subject-btn:hover { background: rgba(79,158,255,0.12); border-color: rgba(79,158,255,0.4); }
+
+  .summary-hero { text-align: center; padding: 24px 0 20px; }
+  .summary-pct { font-family: 'Sora', sans-serif; font-size: 64px; font-weight: 800; background: linear-gradient(135deg, #fff 20%, var(--accent-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+  .summary-label { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+  .summary-stats { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .summary-stat { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 10px 18px; text-align: center; }
+  .summary-stat-val { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-primary); }
+  .summary-stat-key { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .divider { height: 1px; background: var(--glass-border); margin: 20px 0; }
+
+  .subject-table { width: 100%; border-collapse: collapse; }
+  .subject-table th { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 0 12px 10px; text-align: left; }
+  .subject-table td { padding: 10px 12px; font-size: 14px; border-top: 1px solid var(--glass-border); }
+  .subject-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .prog-wrap { width: 80px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.6s ease; }
+
+  .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; font-size: 16px; color: var(--text-secondary); transition: var(--transition); }
+  .back-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
+  .detail-name-input { background: transparent; border: none; outline: none; font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-primary); width: 100%; border-bottom: 2px solid transparent; transition: var(--transition); }
+  .detail-name-input:focus { border-bottom-color: var(--accent); }
+  .detail-hero { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 28px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .detail-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(79,158,255,0.06), transparent 70%); }
+  .detail-pct { font-family: 'Sora', sans-serif; font-size: 72px; font-weight: 800; background: linear-gradient(135deg, #fff 10%, var(--accent-bright) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; position: relative; }
+  .detail-marks { font-size: 15px; color: var(--text-secondary); margin-top: 8px; position: relative; }
+  .detail-badges { display: flex; justify-content: center; gap: 10px; margin-top: 14px; position: relative; }
+  .pass-badge { padding: 4px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; }
+  .pass-badge.pass { background: rgba(61,255,160,0.12); color: var(--green); border: 1px solid rgba(61,255,160,0.25); }
+  .pass-badge.fail { background: rgba(255,90,126,0.12); color: var(--red); border: 1px solid rgba(255,90,126,0.25); }
+
+  .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .subjects-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .confirm-box { background: rgba(255,90,126,0.06); border: 1px solid rgba(255,90,126,0.2); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; }
+  .confirm-text { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
+  .confirm-actions { display: flex; gap: 10px; }
+
+  @media (max-width: 480px) {
+    .subject-row { grid-template-columns: 1fr 70px 70px 30px; gap: 6px; }
+    .modal { padding: 20px 16px; }
+    .detail-pct { font-size: 52px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="header">
+    <div class="logo">Grad<span>ix</span></div>
+    <div id="header-btn"></div>
+  </header>
+  <main class="main" id="main-content"></main>
+</div>
+
+<script>
+const SUBJECTS = ['English','Urdu','Maths','Computer','Chemistry','Islamiyat','Physics','Statistics','Biology','Other'];
+
+function getGrade(pct) {
+  if (pct >= 90) return 'A+';
+  if (pct >= 80) return 'A';
+  if (pct >= 70) return 'B';
+  if (pct >= 60) return 'C';
+  if (pct >= 50) return 'D';
+  if (pct >= 40) return 'E';
+  return 'F';
+}
+
+function badgeClass(g) {
+  return 'badge badge-' + (g === 'A+' ? 'Aplus' : g);
+}
+
+function loadResults() {
+  try { return JSON.parse(localStorage.getItem('gradix_results') || '[]'); } catch { return []; }
+}
+function saveResults(r) { localStorage.setItem('gradix_results', JSON.stringify(r)); }
+
+let view = 'dashboard';
+let editId = null;
+let detailId = null;
+let newStep = 1;
+let newName = '';
+let subjects = [{ id:1, subject:'', custom:'', obtained:'', total:'100' }];
+let subjIdCounter = 2;
+let showConfirmDelete = false;
+
+function calcSubjects(subs) {
+  return subs.map(s => {
+    const pct = s.total > 0 ? Math.round((s.obtained / s.total) * 100 * 10) / 10 : 0;
+    return { ...s, percentage: pct, grade: getGrade(pct) };
+  });
+}
+function calcOverall(subs) {
+  const totalObtained = subs.reduce((a,s) => a + Number(s.obtained||0), 0);
+  const grandTotal = subs.reduce((a,s) => a + Number(s.total||100), 0);
+  const pct = grandTotal > 0 ? Math.round((totalObtained / grandTotal) * 100 * 10) / 10 : 0;
+  const passFail = pct >= 40 && subs.every(s => (Number(s.obtained||0)/Number(s.total||100)*100) >= 40);
+  return { totalObtained, grandTotal, percentage: pct, grade: getGrade(pct), passFail };
+}
+
+function render() {
+  const hdr = document.getElementById('header-btn');
+  const main = document.getElementById('main-content');
+  if (view === 'dashboard') {
+    hdr.innerHTML = `<button class="btn btn-primary" onclick="startNew()">&#＋; New Result</button>`;
+    hdr.innerHTML = `<button class="btn btn-primary" onclick="startNew()">+ New Result</button>`;
+    renderDashboard(main);
+  } else if (view === 'new') {
+    hdr.innerHTML = `<button class="btn btn-ghost btn-sm" onclick="goHome()">&#10005; Cancel</button>`;
+    renderNew(main);
+  } else if (view === 'detail') {
+    hdr.innerHTML = '';
+    renderDetail(main);
+  }
+}
+
+function renderDashboard(el) {
+  const results = loadResults();
+  let html = `<div class="dash-header">
+    <div><div class="dash-title">My Results</div><div class="dash-subtitle">${results.length} saved result${results.length!==1?'s':''}</div></div>
+  </div><div class="grid">`;
+  if (!results.length) {
+    html += `<div class="empty">
+      <div class="empty-icon">&#128202;</div>
+      <div class="empty-title">No results yet</div>
+      <div class="empty-sub">Tap "+ New Result" to add your first exam result and track your performance.</div>
+    </div>`;
+  } else {
+    results.forEach((r, i) => {
+      html += `<div class="card" style="animation-delay:${i*0.05}s" onclick="openDetail('${r.id}')">
+        <div class="card-name">${esc(r.name)}</div>
+        <div class="card-pct">${r.overall.percentage}%</div>
+        <div class="card-marks">${r.overall.totalObtained} / ${r.overall.grandTotal} marks</div>
+        <div class="card-footer">
+          <span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span>
+          <span class="card-meta">${r.subjects.length} subject${r.subjects.length!==1?'s':''} &middot; ${formatDate(r.date)}</span>
+        </div>
+      </div>`;
+    });
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderNew(el) {
+  let html = `<div style="max-width:560px;margin:0 auto">
+    <div class="modal-header"><div class="modal-title">${editId ? 'Edit Result' : 'New Result'}</div></div>
+    <div class="steps">
+      <div class="step-dot ${newStep>=1?'active':''}"></div>
+      <div class="step-dot ${newStep>1?'done':''}"></div>
+      <div class="step-dot ${newStep>=2?newStep===2?'active':'done':''}"></div>
+      <div class="step-dot ${newStep>2?'done':''}"></div>
+      <div class="step-dot ${newStep>=3?'active':''}"></div>
+    </div>`;
+  if (newStep === 1) {
+    html += `<div class="form-group">
+      <label class="form-label">Result Name</label>
+      <input class="form-input" type="text" id="result-name" value="${esc(newName)}" placeholder="e.g. Final Exams 2025, Mid Term&hellip;" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="step1Next()">Continue &rarr;</button>`;
+  } else if (newStep === 2) {
+    html += `<div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+      <span class="form-label" style="margin:0">Subjects &amp; Marks</span>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px;padding:0 2px">
+      <span>Subject</span><span>Obtained</span><span>Total</span><span></span>
+    </div>
+    <div id="subject-rows">`;
+    subjects.forEach(s => { html += renderSubjectRow(s); });
+    html += `</div>
+    <button class="add-subject-btn" onclick="addSubject()" style="margin-top:4px;margin-bottom:20px">&#＋; Add Subject</button>
+    <button class="add-subject-btn" onclick="addSubject()" style="margin-top:4px;margin-bottom:20px">+ Add Subject</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="newStep=1;render()">&larr; Back</button>
+      <button class="btn btn-primary" style="flex:1" onclick="step2Next()">Calculate &rarr;</button>
+    </div>`;
+  } else if (newStep === 3) {
+    const calced = calcSubjects(subjects.map(s => ({...s, obtained: Number(s.obtained||0), total: Number(s.total||100)})));
+    const overall = calcOverall(calced);
+    html += `<div class="summary-hero">
+      <div class="summary-pct">${overall.percentage}%</div>
+      <div class="summary-label">${esc(newName)}</div>
+      <div class="summary-stats">
+        <div class="summary-stat"><div class="summary-stat-val">${overall.totalObtained}/${overall.grandTotal}</div><div class="summary-stat-key">Total Marks</div></div>
+        <div class="summary-stat"><div class="summary-stat-val"><span class="${badgeClass(overall.grade)}">${overall.grade}</span></div><div class="summary-stat-key">Grade</div></div>
+        <div class="summary-stat"><div class="summary-stat-val" style="color:${overall.passFail?'var(--green)':'var(--red)'}">${overall.passFail?'PASS':'FAIL'}</div><div class="summary-stat-key">Status</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <table class="subject-table" style="margin-bottom:20px">
+      <thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead>
+      <tbody>`;
+    calced.forEach(s => {
+      const name = s.subject === 'Other' ? (s.custom||'Other') : s.subject;
+      html += `<tr>
+        <td style="font-weight:500">${esc(name)}</td>
+        <td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td>
+        <td>${s.percentage}%</td>
+        <td><span class="${badgeClass(s.grade)}">${s.grade}</span></td>
+        <td><div class="prog-wrap"><div class="prog-fill" style="width:${s.percentage}%"></div></div></td>
+      </tr>`;
+    });
+    html += `</tbody></table>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="newStep=2;render()">&larr; Edit</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveResult()">&#128190; Save Result</button>
+    </div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderSubjectRow(s) {
+  const selOpts = SUBJECTS.map(sub => `<option value="${sub}" ${s.subject===sub?'selected':''}>${sub}</option>`).join('');
+  return `<div class="subject-row" id="srow-${s.id}">
+    <div>
+      <select class="form-input" onchange="updateSubject(${s.id},'subject',this.value)">${selOpts}</select>
+      ${s.subject==='Other' ? `<input class="form-input" style="margin-top:6px" type="text" placeholder="Subject name" value="${esc(s.custom||'')}" oninput="updateSubject(${s.id},'custom',this.value)">` : ''}
+    </div>
+    <input class="form-input" type="number" min="0" placeholder="0" value="${s.obtained}" oninput="updateSubject(${s.id},'obtained',this.value)">
+    <input class="form-input" type="number" min="1" placeholder="100" value="${s.total}" oninput="updateSubject(${s.id},'total',this.value)">
+    <button class="remove-btn" onclick="removeSubject(${s.id})">&#10005;</button>
+  </div>`;
+}
+
+function renderDetail(el) {
+  const results = loadResults();
+  const r = results.find(x => x.id === detailId);
+  if (!r) { goHome(); return; }
+  let html = `<div class="detail-header">
+    <button class="back-btn" onclick="goHome()">&larr;</button>
+    <input class="detail-name-input" id="detail-name" value="${esc(r.name)}" onchange="updateDetailName(this.value)" onblur="updateDetailName(this.value)">
+  </div>
+  <div class="detail-hero">
+    <div class="detail-pct">${r.overall.percentage}%</div>
+    <div class="detail-marks">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
+    <div class="detail-badges">
+      <span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span>
+      <span class="pass-badge ${r.overall.passFail?'pass':'fail'}">${r.overall.passFail?'&#10003; PASS':'&#10007; FAIL'}</span>
+    </div>
+  </div>
+  <div class="section-label">Subject Breakdown</div>
+  <div class="subjects-card">
+    <table class="subject-table">
+      <thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead>
+      <tbody>`;
+  r.subjects.forEach(s => {
+    const name = s.subject === 'Other' ? (s.custom||'Other') : s.subject;
+    html += `<tr>
+      <td style="font-weight:500">${esc(name)}</td>
+      <td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td>
+      <td>${s.percentage}%</td>
+      <td><span class="${badgeClass(s.grade)}">${s.grade}</span></td>
+      <td><div class="prog-wrap"><div class="prog-fill" style="width:${Math.min(s.percentage,100)}%"></div></div></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="detail-actions">
+    <button class="btn btn-ghost" onclick="editResult('${r.id}')">&#9999;&#65039; Edit</button>
+    <button class="btn btn-danger" onclick="toggleConfirm()">&#128465;&#65039; Delete</button>
+  </div>
+  <div id="confirm-box" style="display:${showConfirmDelete?'block':'none'}">
+    <div class="confirm-box">
+      <div class="confirm-text">Are you sure you want to delete "<strong>${esc(r.name)}</strong>"? This cannot be undone.</div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="toggleConfirm()">Cancel</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteResult('${r.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`;
+  el.innerHTML = html;
+}
+
+function goHome() { view='dashboard'; editId=null; detailId=null; showConfirmDelete=false; render(); }
+function startNew() {
+  view='new'; editId=null; newStep=1; newName='';
+  subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}]; subjIdCounter=2;
+  render();
+}
+function openDetail(id) { view='detail'; detailId=id; showConfirmDelete=false; render(); }
+function toggleConfirm() { showConfirmDelete=!showConfirmDelete; render(); }
+
+function step1Next() {
+  const val = document.getElementById('result-name').value.trim();
+  if (!val) { flashInput('result-name'); return; }
+  newName = val; newStep=2; render();
+}
+function step2Next() {
+  syncSubjectsFromDOM();
+  let valid = true;
+  subjects.forEach(s => {
+    if (!s.subject) { valid=false; return; }
+    if (s.obtained===''||s.total==='') { valid=false; return; }
+    if (Number(s.obtained) > Number(s.total)) { valid=false; return; }
+  });
+  if (!valid || !subjects.length) { alert('Please fill all subject rows correctly (obtained \u2264 total).'); return; }
+  newStep=3; render();
+}
+
+function addSubject() {
+  syncSubjectsFromDOM();
+  subjects.push({id:subjIdCounter++, subject:'', custom:'', obtained:'', total:'100'});
+  renderSubjectRowsOnly();
+}
+function removeSubject(id) {
+  syncSubjectsFromDOM();
+  if (subjects.length <= 1) return;
+  subjects = subjects.filter(s => s.id !== id);
+  renderSubjectRowsOnly();
+}
+function renderSubjectRowsOnly() {
+  const container = document.getElementById('subject-rows');
+  if (!container) return;
+  container.innerHTML = subjects.map(s => renderSubjectRow(s)).join('');
+}
+function updateSubject(id, field, val) {
+  const s = subjects.find(x => x.id===id);
+  if (s) { s[field]=val; if(field==='subject') renderSubjectRowsOnly(); }
+}
+function syncSubjectsFromDOM() {
+  subjects.forEach(s => {
+    const el = document.getElementById('srow-'+s.id);
+    if (!el) return;
+    const sel = el.querySelector('select');
+    const inps = el.querySelectorAll('input[type="number"]');
+    const cust = el.querySelector('input[type="text"]');
+    if (sel) s.subject = sel.value;
+    if (inps[0]) s.obtained = inps[0].value;
+    if (inps[1]) s.total = inps[1].value;
+    if (cust) s.custom = cust.value;
+  });
+}
+
+function saveResult() {
+  const calced = calcSubjects(subjects.map(s => ({...s, obtained: Number(s.obtained||0), total: Number(s.total||100)})));
+  const overall = calcOverall(calced);
+  const results = loadResults();
+  if (editId) {
+    const idx = results.findIndex(r => r.id === editId);
+    if (idx > -1) results[idx] = { ...results[idx], name: newName, subjects: calced, overall };
+  } else {
+    results.unshift({ id: 'r_'+Date.now(), name: newName, date: new Date().toISOString(), subjects: calced, overall });
+  }
+  saveResults(results);
+  goHome();
+}
+
+function editResult(id) {
+  const results = loadResults();
+  const r = results.find(x => x.id === id);
+  if (!r) return;
+  editId = id; view='new'; newStep=1; newName=r.name;
+  subjects = r.subjects.map((s,i) => ({id:i+1, subject:s.subject, custom:s.custom||'', obtained:String(s.obtained), total:String(s.total)}));
+  subjIdCounter = subjects.length+1;
+  render();
+}
+
+function deleteResult(id) {
+  let results = loadResults();
+  results = results.filter(r => r.id !== id);
+  saveResults(results);
+  goHome();
+}
+
+function updateDetailName(val) {
+  const results = loadResults();
+  const idx = results.findIndex(r => r.id === detailId);
+  if (idx > -1 && val.trim()) { results[idx].name = val.trim(); saveResults(results); }
+}
+
+function flashInput(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = 'var(--red)';
+  el.style.boxShadow = '0 0 0 3px rgba(255,90,126,0.15)';
+  setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1000);
+}
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+render();
+</script>
+</body>
+</html>
