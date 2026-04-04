@@ -6,595 +6,414 @@
 <title>Gradix</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#4f9eff;--accent-bright:#70b4ff;
+  --accent-glow:rgba(79,158,255,0.25);--accent-glow-soft:rgba(79,158,255,0.1);
+  --glass-bg:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--glass-hover:rgba(255,255,255,0.07);
+  --text-primary:#e8f0fe;--text-secondary:rgba(200,215,245,0.65);--text-muted:rgba(150,175,220,0.4);
+  --red:#ff5a7e;--green:#3dffa0;--yellow:#ffd060;--orange:#ff9a45;--purple:#b87fff;
+  --radius:16px;--radius-sm:10px;--transition:0.25s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{height:100%;background:#040810;color:var(--text-primary);font-family:'Outfit',sans-serif;overflow-x:hidden}
+#orb-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:.4;pointer-events:none}
+#app{position:relative;z-index:1;min-height:100vh;padding-bottom:72px}
+.header{padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--glass-border);background:rgba(4,8,16,0.65);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(4,8,16,0.88);backdrop-filter:blur(24px);border-top:1px solid var(--glass-border);display:flex;height:64px;padding:0 16px;gap:8px;align-items:center;justify-content:center}
+.nav-tab{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 12px;border-radius:14px;cursor:pointer;transition:var(--transition);background:transparent;border:none;color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500}
+.nav-tab .nav-icon{font-size:20px;transition:transform 0.2s ease}
+.nav-tab.active{color:var(--accent);background:rgba(79,158,255,0.08)}
+.nav-tab.active .nav-icon{transform:scale(1.12)}
+.nav-tab:hover:not(.active){color:var(--text-secondary);background:var(--glass-bg)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:50px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);border:none;outline:none;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent-glow),0 4px 15px rgba(79,158,255,0.3)}
+.btn-primary:hover{background:var(--accent-bright);box-shadow:0 0 30px rgba(79,158,255,0.5),0 6px 20px rgba(79,158,255,0.4);transform:translateY(-1px)}
+.btn-ghost{background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--glass-hover);color:var(--text-primary);border-color:rgba(255,255,255,0.14)}
+.btn-danger{background:rgba(255,90,126,0.12);border:1px solid rgba(255,90,126,0.25);color:var(--red)}
+.btn-danger:hover{background:rgba(255,90,126,0.2)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.main{max-width:960px;margin:0 auto;padding:28px 20px 20px}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.dash-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700}
+.dash-subtitle{font-size:14px;color:var(--text-secondary);margin-top:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:var(--transition);backdrop-filter:blur(12px);position:relative;overflow:hidden;animation:cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both}
+.card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(135deg,rgba(79,158,255,0.04),transparent);opacity:0;transition:opacity 0.25s}
+.card:hover{border-color:rgba(79,158,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px var(--accent-glow-soft)}
+.card:hover::before{opacity:1}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;margin-bottom:14px}
+.card-pct{font-family:'Sora',sans-serif;font-size:42px;font-weight:800;line-height:1;margin-bottom:4px;background:linear-gradient(135deg,#fff,var(--accent-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card-marks{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.card-meta{font-size:12px;color:var(--text-muted)}
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:0.3px}
+.badge-Aplus{background:rgba(61,255,160,0.15);color:var(--green);border:1px solid rgba(61,255,160,0.25)}
+.badge-A{background:rgba(79,158,255,0.15);color:var(--accent-bright);border:1px solid rgba(79,158,255,0.25)}
+.badge-B{background:rgba(184,127,255,0.15);color:var(--purple);border:1px solid rgba(184,127,255,0.25)}
+.badge-C{background:rgba(255,208,96,0.12);color:var(--yellow);border:1px solid rgba(255,208,96,0.2)}
+.badge-D{background:rgba(255,154,69,0.12);color:var(--orange);border:1px solid rgba(255,154,69,0.2)}
+.badge-E{background:rgba(255,90,126,0.1);color:#ff8fa7;border:1px solid rgba(255,90,126,0.2)}
+.badge-F{background:rgba(255,90,126,0.15);color:var(--red);border:1px solid rgba(255,90,126,0.3)}
+.empty{grid-column:1/-1;text-align:center;padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.empty-icon{font-size:56px;opacity:0.3}
+.empty-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:600;color:var(--text-secondary)}
+.empty-sub{font-size:14px;color:var(--text-muted);max-width:300px;line-height:1.6}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.3px}
+.form-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:var(--transition)}
+.form-input:focus{border-color:rgba(79,158,255,0.5);background:rgba(79,158,255,0.05);box-shadow:0 0 0 3px rgba(79,158,255,0.08)}
+.form-input::placeholder{color:var(--text-muted)}
+select.form-input{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234f9eff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select.form-input option{background:#0d1830}
+.subject-row{display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px;align-items:end;margin-bottom:10px;animation:cardIn 0.25s ease both}
+.remove-btn{width:34px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:rgba(255,90,126,0.08);border:1px solid rgba(255,90,126,0.15);color:var(--red);cursor:pointer;font-size:15px;transition:var(--transition)}
+.remove-btn:hover{background:rgba(255,90,126,0.18)}
+.add-subject-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius-sm);background:rgba(79,158,255,0.06);border:1px dashed rgba(79,158,255,0.25);color:var(--accent);font-size:14px;font-weight:500;cursor:pointer;transition:var(--transition);width:100%;justify-content:center;font-family:'Outfit',sans-serif}
+.add-subject-btn:hover{background:rgba(79,158,255,0.12);border-color:rgba(79,158,255,0.4)}
+.steps{display:flex;align-items:center;gap:8px;margin-bottom:28px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--glass-border);transition:var(--transition)}
+.step-dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent-glow);width:24px;border-radius:4px}
+.step-dot.done{background:rgba(79,158,255,0.4)}
+.summary-hero{text-align:center;padding:24px 0 20px}
+.summary-pct{font-family:'Sora',sans-serif;font-size:64px;font-weight:800;background:linear-gradient(135deg,#fff 20%,var(--accent-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.summary-label{font-size:14px;color:var(--text-secondary);margin-top:6px}
+.summary-stats{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.summary-stat{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:10px 18px;text-align:center}
+.summary-stat-val{font-family:'Sora',sans-serif;font-size:18px;font-weight:700}
+.summary-stat-key{font-size:11px;color:var(--text-muted);margin-top:2px}
+.divider{height:1px;background:var(--glass-border);margin:20px 0}
+.subject-table{width:100%;border-collapse:collapse}
+.subject-table th{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;padding:0 12px 10px;text-align:left}
+.subject-table td{padding:10px 12px;font-size:14px;border-top:1px solid var(--glass-border)}
+.subject-table tr:hover td{background:rgba(255,255,255,0.02)}
+.prog-wrap{width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 0.6s ease}
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;font-size:16px;color:var(--text-secondary);transition:var(--transition)}
+.back-btn:hover{background:var(--glass-hover);color:var(--text-primary)}
+.detail-name-input{background:transparent;border:none;outline:none;font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--text-primary);width:100%;border-bottom:2px solid transparent;transition:var(--transition)}
+.detail-name-input:focus{border-bottom-color:var(--accent)}
+.detail-hero{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:28px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.detail-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(79,158,255,0.06),transparent 70%)}
+.detail-pct{font-family:'Sora',sans-serif;font-size:72px;font-weight:800;background:linear-gradient(135deg,#fff 10%,var(--accent-bright) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;position:relative}
+.detail-marks{font-size:15px;color:var(--text-secondary);margin-top:8px;position:relative}
+.detail-badges{display:flex;justify-content:center;gap:10px;margin-top:14px;position:relative}
+.pass-badge{padding:4px 16px;border-radius:50px;font-size:12px;font-weight:700}
+.pass-badge.pass{background:rgba(61,255,160,0.12);color:var(--green);border:1px solid rgba(61,255,160,0.25)}
+.pass-badge.fail{background:rgba(255,90,126,0.12);color:var(--red);border:1px solid rgba(255,90,126,0.25)}
+.section-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.subjects-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap}
+.confirm-box{background:rgba(255,90,126,0.06);border:1px solid rgba(255,90,126,0.2);border-radius:var(--radius-sm);padding:16px;margin-top:16px}
+.confirm-text{font-size:14px;color:var(--text-secondary);margin-bottom:14px}
+.confirm-actions{display:flex;gap:10px}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700}
+/* Customize */
+.customize-wrap{max-width:560px;margin:0 auto}
+.customize-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px}
+.customize-sub{font-size:14px;color:var(--text-secondary);margin-bottom:32px}
+.orb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.orb-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 14px;border-radius:var(--radius);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden}
+.orb-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.16)}
+.orb-preview{width:52px;height:52px;border-radius:50%;flex-shrink:0;transition:transform 0.3s ease,box-shadow 0.3s ease}
+.orb-card:hover .orb-preview{transform:scale(1.1)}
+.orb-card.selected .orb-preview{transform:scale(1.15)}
+.orb-name{font-size:12px;font-weight:600;color:var(--text-secondary);text-align:center}
+@media(max-width:480px){
+  .subject-row{grid-template-columns:1fr 70px 70px 30px;gap:6px}
+  .detail-pct{font-size:52px}
+  .grid{grid-template-columns:1fr}
+  .orb-grid{gap:10px}
+  .orb-preview{width:40px;height:40px}
+  .orb-name{font-size:10px}
+}
 
-  :root {
-    --bg-deep: #040810;
-    --bg-navy: #070d1c;
-    --bg-mid: #0b1428;
-    --accent: #4f9eff;
-    --accent-bright: #70b4ff;
-    --accent-glow: rgba(79,158,255,0.25);
-    --accent-glow-soft: rgba(79,158,255,0.1);
-    --glass-bg: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.08);
-    --glass-hover: rgba(255,255,255,0.07);
-    --text-primary: #e8f0fe;
-    --text-secondary: rgba(200,215,245,0.65);
-    --text-muted: rgba(150,175,220,0.4);
-    --red: #ff5a7e;
-    --green: #3dffa0;
-    --yellow: #ffd060;
-    --orange: #ff9a45;
-    --purple: #b87fff;
-    --radius: 16px;
-    --radius-sm: 10px;
-    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
-  }
+/* Print / PDF */
+@media print{
+  #orb-canvas,body::after,.bottom-nav,.header,.detail-actions,.confirm-box,.back-btn,.btn{display:none!important}
+  body,html{background:#040810!important;color:#e8f0fe!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #app{padding:0!important}
+  .print-page{display:block!important;padding:0;margin:0}
+}
+.print-page{display:none}
 
-  html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+.btn-print{background:rgba(79,158,255,0.12);border:1px solid rgba(79,158,255,0.3);color:var(--accent);font-family:'Outfit',sans-serif}
+.btn-print:hover{background:rgba(79,158,255,0.2)}
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(30,60,140,0.45) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(20,40,120,0.3) 0%, transparent 55%),
-      radial-gradient(ellipse 40% 40% at 60% 30%, rgba(79,158,255,0.06) 0%, transparent 50%),
-      linear-gradient(160deg, #040810 0%, #070d1c 40%, #0b1428 100%);
-    pointer-events: none;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
-  #app { position: relative; z-index: 1; min-height: 100vh; }
-
-  .header {
-    padding: 20px 24px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--glass-border);
-    background: rgba(4,8,16,0.6);
-    backdrop-filter: blur(20px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo {
-    font-family: 'Sora', sans-serif;
-    font-size: 22px; font-weight: 800;
-    background: linear-gradient(135deg, #fff 30%, var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-  }
-  .logo span { -webkit-text-fill-color: var(--accent); }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 10px 20px; border-radius: 50px;
-    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: var(--transition); border: none; outline: none;
-    white-space: nowrap;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    box-shadow: 0 0 20px var(--accent-glow), 0 4px 15px rgba(79,158,255,0.3);
-  }
-  .btn-primary:hover { background: var(--accent-bright); box-shadow: 0 0 30px rgba(79,158,255,0.5), 0 6px 20px rgba(79,158,255,0.4); transform: translateY(-1px); }
-  .btn-ghost {
-    background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary);
-  }
-  .btn-ghost:hover { background: var(--glass-hover); color: var(--text-primary); border-color: rgba(255,255,255,0.14); }
-  .btn-danger { background: rgba(255,90,126,0.12); border: 1px solid rgba(255,90,126,0.25); color: var(--red); }
-  .btn-danger:hover { background: rgba(255,90,126,0.2); }
-  .btn-sm { padding: 7px 14px; font-size: 13px; }
-  .btn-icon { padding: 8px; border-radius: 10px; }
-
-  .main { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
-
-  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
-  .dash-title { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700; color: var(--text-primary); }
-  .dash-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 3px; }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
-
-  .card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius);
-    padding: 22px;
-    cursor: pointer;
-    transition: var(--transition);
-    backdrop-filter: blur(12px);
-    position: relative; overflow: hidden;
-    animation: cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
-  }
-  .card::before {
-    content: '';
-    position: absolute; inset: 0; border-radius: var(--radius);
-    background: linear-gradient(135deg, rgba(79,158,255,0.04), transparent);
-    opacity: 0; transition: opacity 0.25s;
-  }
-  .card:hover { border-color: rgba(79,158,255,0.25); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow-soft); }
-  .card:hover::before { opacity: 1; }
-  @keyframes cardIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-
-  .card-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--text-primary); }
-  .card-pct { font-family: 'Sora', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; margin-bottom: 4px; background: linear-gradient(135deg, #fff, var(--accent-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .card-marks { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
-  .card-footer { display: flex; align-items: center; justify-content: space-between; }
-  .card-meta { font-size: 12px; color: var(--text-muted); }
-
-  .badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .badge-Aplus { background: rgba(61,255,160,0.15); color: var(--green); border: 1px solid rgba(61,255,160,0.25); }
-  .badge-A { background: rgba(79,158,255,0.15); color: var(--accent-bright); border: 1px solid rgba(79,158,255,0.25); }
-  .badge-B { background: rgba(184,127,255,0.15); color: var(--purple); border: 1px solid rgba(184,127,255,0.25); }
-  .badge-C { background: rgba(255,208,96,0.12); color: var(--yellow); border: 1px solid rgba(255,208,96,0.2); }
-  .badge-D { background: rgba(255,154,69,0.12); color: var(--orange); border: 1px solid rgba(255,154,69,0.2); }
-  .badge-E { background: rgba(255,90,126,0.1); color: #ff8fa7; border: 1px solid rgba(255,90,126,0.2); }
-  .badge-F { background: rgba(255,90,126,0.15); color: var(--red); border: 1px solid rgba(255,90,126,0.3); }
-
-  .empty {
-    grid-column: 1/-1; text-align: center; padding: 80px 20px;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
-  }
-  .empty-icon { font-size: 56px; opacity: 0.3; }
-  .empty-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: var(--text-secondary); }
-  .empty-sub { font-size: 14px; color: var(--text-muted); max-width: 300px; line-height: 1.6; }
-
-  .overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(4,8,16,0.85);
-    backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center; padding: 16px;
-    animation: fadeIn 0.2s ease;
-  }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-  .modal {
-    background: linear-gradient(145deg, #0d1830, #0a1225);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    width: 100%; max-width: 640px; max-height: 90vh;
-    overflow-y: auto; overflow-x: hidden;
-    padding: 28px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(79,158,255,0.08);
-    animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
-    scrollbar-width: thin; scrollbar-color: rgba(79,158,255,0.2) transparent;
-  }
-  @keyframes slideUp { from { opacity:0; transform:translateY(24px) scale(0.98); } to { opacity:1; transform:none; } }
-  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .modal-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
-  .close-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); cursor: pointer; font-size: 18px; transition: var(--transition); flex-shrink: 0; }
-  .close-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
-
-  .steps { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--glass-border); transition: var(--transition); }
-  .step-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); width: 24px; border-radius: 4px; }
-  .step-dot.done { background: rgba(79,158,255,0.4); }
-
-  .form-group { margin-bottom: 20px; }
-  .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 0.3px; }
-  .form-input {
-    width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
-    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
-    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 15px;
-    outline: none; transition: var(--transition);
-  }
-  .form-input:focus { border-color: rgba(79,158,255,0.5); background: rgba(79,158,255,0.05); box-shadow: 0 0 0 3px rgba(79,158,255,0.08); }
-  .form-input::placeholder { color: var(--text-muted); }
-  select.form-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234f9eff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-  select.form-input option { background: #0d1830; }
-
-  .subject-row {
-    display: grid; grid-template-columns: 1fr 90px 90px 34px;
-    gap: 8px; align-items: end; margin-bottom: 10px;
-    animation: cardIn 0.25s ease both;
-  }
-  .remove-btn { width: 34px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); background: rgba(255,90,126,0.08); border: 1px solid rgba(255,90,126,0.15); color: var(--red); cursor: pointer; font-size: 15px; transition: var(--transition); flex-shrink: 0; }
-  .remove-btn:hover { background: rgba(255,90,126,0.18); }
-
-  .add-subject-btn {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 16px; border-radius: var(--radius-sm);
-    background: rgba(79,158,255,0.06); border: 1px dashed rgba(79,158,255,0.25);
-    color: var(--accent); font-size: 14px; font-weight: 500; cursor: pointer;
-    transition: var(--transition); width: 100%; justify-content: center;
-    font-family: 'Outfit', sans-serif;
-  }
-  .add-subject-btn:hover { background: rgba(79,158,255,0.12); border-color: rgba(79,158,255,0.4); }
-
-  .summary-hero { text-align: center; padding: 24px 0 20px; }
-  .summary-pct { font-family: 'Sora', sans-serif; font-size: 64px; font-weight: 800; background: linear-gradient(135deg, #fff 20%, var(--accent-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
-  .summary-label { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
-  .summary-stats { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
-  .summary-stat { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 10px 18px; text-align: center; }
-  .summary-stat-val { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-primary); }
-  .summary-stat-key { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .divider { height: 1px; background: var(--glass-border); margin: 20px 0; }
-
-  .subject-table { width: 100%; border-collapse: collapse; }
-  .subject-table th { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 0 12px 10px; text-align: left; }
-  .subject-table td { padding: 10px 12px; font-size: 14px; border-top: 1px solid var(--glass-border); }
-  .subject-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  .prog-wrap { width: 80px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
-  .prog-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.6s ease; }
-
-  .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-  .back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; font-size: 16px; color: var(--text-secondary); transition: var(--transition); }
-  .back-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
-  .detail-name-input { background: transparent; border: none; outline: none; font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-primary); width: 100%; border-bottom: 2px solid transparent; transition: var(--transition); }
-  .detail-name-input:focus { border-bottom-color: var(--accent); }
-  .detail-hero { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 28px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
-  .detail-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(79,158,255,0.06), transparent 70%); }
-  .detail-pct { font-family: 'Sora', sans-serif; font-size: 72px; font-weight: 800; background: linear-gradient(135deg, #fff 10%, var(--accent-bright) 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; position: relative; }
-  .detail-marks { font-size: 15px; color: var(--text-secondary); margin-top: 8px; position: relative; }
-  .detail-badges { display: flex; justify-content: center; gap: 10px; margin-top: 14px; position: relative; }
-  .pass-badge { padding: 4px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; }
-  .pass-badge.pass { background: rgba(61,255,160,0.12); color: var(--green); border: 1px solid rgba(61,255,160,0.25); }
-  .pass-badge.fail { background: rgba(255,90,126,0.12); color: var(--red); border: 1px solid rgba(255,90,126,0.25); }
-
-  .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
-  .subjects-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
-  .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  .confirm-box { background: rgba(255,90,126,0.06); border: 1px solid rgba(255,90,126,0.2); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; }
-  .confirm-text { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
-  .confirm-actions { display: flex; gap: 10px; }
-
-  @media (max-width: 480px) {
-    .subject-row { grid-template-columns: 1fr 70px 70px 30px; gap: 6px; }
-    .modal { padding: 20px 16px; }
-    .detail-pct { font-size: 52px; }
-    .grid { grid-template-columns: 1fr; }
-  }
 </style>
 </head>
 <body>
+<canvas id="orb-canvas"></canvas>
 <div id="app">
   <header class="header">
-    <div class="logo">Grad<span>ix</span></div>
+    <div class="logo">Grad<span style="-webkit-text-fill-color:var(--accent)">ix</span></div>
     <div id="header-btn"></div>
   </header>
   <main class="main" id="main-content"></main>
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="tab-home" onclick="switchTab('home')">
+      <span class="nav-icon">🏠</span><span>Home</span>
+    </button>
+    <button class="nav-tab" id="tab-customize" onclick="switchTab('customize')">
+      <span class="nav-icon">🎨</span><span>Customize</span>
+    </button>
+  </nav>
 </div>
-
 <script>
-const SUBJECTS = ['English','Urdu','Maths','Computer','Chemistry','Islamiyat','Physics','Statistics','Biology','Other'];
+const THEMES=[
+  {id:'blue',  name:'Blue Orb',  accent:'#4f9eff',bright:'#70b4ff',o1:[30,60,140], o2:[20,40,120], o3:[79,158,255], glow:'rgba(79,158,255,0.25)', gs:'rgba(79,158,255,0.1)'},
+  {id:'green', name:'Green Orb', accent:'#3dffa0',bright:'#6fffc0',o1:[10,100,60],  o2:[5,80,45],   o3:[30,200,100], glow:'rgba(61,255,160,0.25)', gs:'rgba(61,255,160,0.1)'},
+  {id:'red',   name:'Red Orb',   accent:'#ff5a7e',bright:'#ff85a0',o1:[140,20,40],  o2:[120,10,30], o3:[255,60,100], glow:'rgba(255,90,126,0.25)', gs:'rgba(255,90,126,0.1)'},
+  {id:'orange',name:'Orange Orb',accent:'#ff9a45',bright:'#ffb870',o1:[140,60,10],  o2:[120,50,5],  o3:[255,140,50], glow:'rgba(255,154,69,0.25)', gs:'rgba(255,154,69,0.1)'},
+  {id:'pink',  name:'Pink Orb',  accent:'#ff6eb4',bright:'#ff9fd0',o1:[140,20,100], o2:[120,10,80], o3:[255,80,180], glow:'rgba(255,110,180,0.25)',gs:'rgba(255,110,180,0.1)'},
+  {id:'purple',name:'Purple Orb',accent:'#b87fff',bright:'#d0a8ff',o1:[80,20,140],  o2:[60,10,120], o3:[160,80,255], glow:'rgba(184,127,255,0.25)',gs:'rgba(184,127,255,0.1)'},
+  {id:'white', name:'White Orb', accent:'#e8e8f0',bright:'#ffffff', o1:[80,80,100],  o2:[60,60,80],  o3:[200,200,220],glow:'rgba(220,220,240,0.2)', gs:'rgba(220,220,240,0.08)'},
+  {id:'cyan',  name:'Cyan Orb',  accent:'#00e5ff',bright:'#60f4ff',o1:[0,80,120],   o2:[0,60,100],  o3:[0,200,240],  glow:'rgba(0,229,255,0.25)',  gs:'rgba(0,229,255,0.1)'},
+];
 
-function getGrade(pct) {
-  if (pct >= 90) return 'A+';
-  if (pct >= 80) return 'A';
-  if (pct >= 70) return 'B';
-  if (pct >= 60) return 'C';
-  if (pct >= 50) return 'D';
-  if (pct >= 40) return 'E';
-  return 'F';
+const canvas=document.getElementById('orb-canvas');
+const ctx=canvas.getContext('2d');
+let fromOrbs={o1:[30,60,140],o2:[20,40,120],o3:[79,158,255]};
+let toTheme=THEMES[0];
+let lp=1;
+const LS=0.032;
+
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function lerpC(a,b,t){return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
+function ease(t){return 1-Math.pow(1-t,3);}
+
+function draw(){
+  lp=Math.min(1,lp+LS);
+  const e=ease(lp);
+  const c1=lerpC(fromOrbs.o1,toTheme.o1,e);
+  const c2=lerpC(fromOrbs.o2,toTheme.o2,e);
+  const c3=lerpC(fromOrbs.o3,toTheme.o3,e);
+  const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const g1=ctx.createRadialGradient(w*.2,h*.1,0,w*.2,h*.1,w*.55);
+  g1.addColorStop(0,`rgba(${c1[0]|0},${c1[1]|0},${c1[2]|0},0.45)`);
+  g1.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g1;ctx.fillRect(0,0,w,h);
+  const g2=ctx.createRadialGradient(w*.8,h*.85,0,w*.8,h*.85,w*.45);
+  g2.addColorStop(0,`rgba(${c2[0]|0},${c2[1]|0},${c2[2]|0},0.3)`);
+  g2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,w,h);
+  const g3=ctx.createRadialGradient(w*.6,h*.35,0,w*.6,h*.35,w*.3);
+  g3.addColorStop(0,`rgba(${c3[0]|0},${c3[1]|0},${c3[2]|0},0.06)`);
+  g3.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g3;ctx.fillRect(0,0,w,h);
+  requestAnimationFrame(draw);
+}
+draw();
+
+function applyTheme(t){
+  fromOrbs={o1:[...toTheme.o1],o2:[...toTheme.o2],o3:[...toTheme.o3]};
+  toTheme=t;lp=0;
+  const r=document.documentElement;
+  r.style.setProperty('--accent',t.accent);
+  r.style.setProperty('--accent-bright',t.bright);
+  r.style.setProperty('--accent-glow',t.glow);
+  r.style.setProperty('--accent-glow-soft',t.gs);
+  localStorage.setItem('gradix_theme',t.id);
+}
+function loadTheme(){const s=localStorage.getItem('gradix_theme');applyTheme(THEMES.find(t=>t.id===s)||THEMES[0]);}
+
+// App
+const SUBJECTS=['English','Urdu','Maths','Computer','Chemistry','Islamiyat','Physics','Statistics','Biology','Other'];
+let activeTab='home',view='dashboard',editId=null,detailId=null,newStep=1,newName='';
+let subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}],subjIdCounter=2,showConfirmDelete=false;
+
+function getGrade(p){return p>=90?'A+':p>=80?'A':p>=70?'B':p>=60?'C':p>=50?'D':p>=40?'E':'F';}
+function badgeClass(g){return'badge badge-'+(g==='A+'?'Aplus':g);}
+function loadResults(){try{return JSON.parse(localStorage.getItem('gradix_results')||'[]');}catch{return[];}}
+function saveResults(r){localStorage.setItem('gradix_results',JSON.stringify(r));}
+function calcSubs(subs){return subs.map(s=>{const p=s.total>0?Math.round(s.obtained/s.total*1000)/10:0;return{...s,percentage:p,grade:getGrade(p)};});}
+function calcOverall(subs){
+  const tot=subs.reduce((a,s)=>a+Number(s.obtained||0),0),grand=subs.reduce((a,s)=>a+Number(s.total||100),0);
+  const p=grand>0?Math.round(tot/grand*1000)/10:0;
+  return{totalObtained:tot,grandTotal:grand,percentage:p,grade:getGrade(p),passFail:p>=40&&subs.every(s=>(Number(s.obtained||0)/Number(s.total||100)*100)>=40)};
 }
 
-function badgeClass(g) {
-  return 'badge badge-' + (g === 'A+' ? 'Aplus' : g);
+function switchTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='home'){view='dashboard';render();}else renderCustomize();
 }
 
-function loadResults() {
-  try { return JSON.parse(localStorage.getItem('gradix_results') || '[]'); } catch { return []; }
-}
-function saveResults(r) { localStorage.setItem('gradix_results', JSON.stringify(r)); }
-
-let view = 'dashboard';
-let editId = null;
-let detailId = null;
-let newStep = 1;
-let newName = '';
-let subjects = [{ id:1, subject:'', custom:'', obtained:'', total:'100' }];
-let subjIdCounter = 2;
-let showConfirmDelete = false;
-
-function calcSubjects(subs) {
-  return subs.map(s => {
-    const pct = s.total > 0 ? Math.round((s.obtained / s.total) * 100 * 10) / 10 : 0;
-    return { ...s, percentage: pct, grade: getGrade(pct) };
-  });
-}
-function calcOverall(subs) {
-  const totalObtained = subs.reduce((a,s) => a + Number(s.obtained||0), 0);
-  const grandTotal = subs.reduce((a,s) => a + Number(s.total||100), 0);
-  const pct = grandTotal > 0 ? Math.round((totalObtained / grandTotal) * 100 * 10) / 10 : 0;
-  const passFail = pct >= 40 && subs.every(s => (Number(s.obtained||0)/Number(s.total||100)*100) >= 40);
-  return { totalObtained, grandTotal, percentage: pct, grade: getGrade(pct), passFail };
+function render(){
+  const hdr=document.getElementById('header-btn'),main=document.getElementById('main-content');
+  if(view==='dashboard'){hdr.innerHTML=`<button class="btn btn-primary" onclick="startNew()">+ New Result</button>`;renderDashboard(main);}
+  else if(view==='new'){hdr.innerHTML=`<button class="btn btn-ghost btn-sm" onclick="goHome()">✕ Cancel</button>`;renderNew(main);}
+  else if(view==='detail'){hdr.innerHTML='';renderDetail(main);}
 }
 
-function render() {
-  const hdr = document.getElementById('header-btn');
-  const main = document.getElementById('main-content');
-  if (view === 'dashboard') {
-    hdr.innerHTML = `<button class="btn btn-primary" onclick="startNew()">&#＋; New Result</button>`;
-    hdr.innerHTML = `<button class="btn btn-primary" onclick="startNew()">+ New Result</button>`;
-    renderDashboard(main);
-  } else if (view === 'new') {
-    hdr.innerHTML = `<button class="btn btn-ghost btn-sm" onclick="goHome()">&#10005; Cancel</button>`;
-    renderNew(main);
-  } else if (view === 'detail') {
-    hdr.innerHTML = '';
-    renderDetail(main);
-  }
+function renderDashboard(el){
+  const results=loadResults();
+  let html=`<div class="dash-header"><div><div class="dash-title">My Results</div><div class="dash-subtitle">${results.length} saved result${results.length!==1?'s':''}</div></div></div><div class="grid">`;
+  if(!results.length){html+=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No results yet</div><div class="empty-sub">Tap "+ New Result" to add your first exam result.</div></div>`;}
+  else{results.forEach((r,i)=>{html+=`<div class="card" style="animation-delay:${i*.05}s" onclick="openDetail('${r.id}')"><div class="card-name">${esc(r.name)}</div><div class="card-pct">${r.overall.percentage}%</div><div class="card-marks">${r.overall.totalObtained} / ${r.overall.grandTotal} marks</div><div class="card-footer"><span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span><span class="card-meta">${r.subjects.length} subject${r.subjects.length!==1?'s':''} · ${fmtDate(r.date)}</span></div></div>`;});}
+  html+='</div>';el.innerHTML=html;
 }
 
-function renderDashboard(el) {
-  const results = loadResults();
-  let html = `<div class="dash-header">
-    <div><div class="dash-title">My Results</div><div class="dash-subtitle">${results.length} saved result${results.length!==1?'s':''}</div></div>
-  </div><div class="grid">`;
-  if (!results.length) {
-    html += `<div class="empty">
-      <div class="empty-icon">&#128202;</div>
-      <div class="empty-title">No results yet</div>
-      <div class="empty-sub">Tap "+ New Result" to add your first exam result and track your performance.</div>
-    </div>`;
-  } else {
-    results.forEach((r, i) => {
-      html += `<div class="card" style="animation-delay:${i*0.05}s" onclick="openDetail('${r.id}')">
-        <div class="card-name">${esc(r.name)}</div>
-        <div class="card-pct">${r.overall.percentage}%</div>
-        <div class="card-marks">${r.overall.totalObtained} / ${r.overall.grandTotal} marks</div>
-        <div class="card-footer">
-          <span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span>
-          <span class="card-meta">${r.subjects.length} subject${r.subjects.length!==1?'s':''} &middot; ${formatDate(r.date)}</span>
-        </div>
-      </div>`;
-    });
-  }
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function renderNew(el) {
-  let html = `<div style="max-width:560px;margin:0 auto">
-    <div class="modal-header"><div class="modal-title">${editId ? 'Edit Result' : 'New Result'}</div></div>
-    <div class="steps">
-      <div class="step-dot ${newStep>=1?'active':''}"></div>
-      <div class="step-dot ${newStep>1?'done':''}"></div>
-      <div class="step-dot ${newStep>=2?newStep===2?'active':'done':''}"></div>
-      <div class="step-dot ${newStep>2?'done':''}"></div>
-      <div class="step-dot ${newStep>=3?'active':''}"></div>
-    </div>`;
-  if (newStep === 1) {
-    html += `<div class="form-group">
-      <label class="form-label">Result Name</label>
-      <input class="form-input" type="text" id="result-name" value="${esc(newName)}" placeholder="e.g. Final Exams 2025, Mid Term&hellip;" autocomplete="off">
-    </div>
-    <button class="btn btn-primary" style="width:100%" onclick="step1Next()">Continue &rarr;</button>`;
-  } else if (newStep === 2) {
-    html += `<div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-      <span class="form-label" style="margin:0">Subjects &amp; Marks</span>
-    </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px;padding:0 2px">
-      <span>Subject</span><span>Obtained</span><span>Total</span><span></span>
-    </div>
-    <div id="subject-rows">`;
-    subjects.forEach(s => { html += renderSubjectRow(s); });
-    html += `</div>
+function renderNew(el){
+  let html=`<div style="max-width:560px;margin:0 auto"><div class="modal-header"><div class="modal-title">${editId?'Edit Result':'New Result'}</div></div>
+  <div class="steps"><div class="step-dot ${newStep>=1?'active':''}"></div><div class="step-dot ${newStep>1?'done':''}"></div><div class="step-dot ${newStep>=2?newStep===2?'active':'done':''}"></div><div class="step-dot ${newStep>2?'done':''}"></div><div class="step-dot ${newStep>=3?'active':''}"></div></div>`;
+  if(newStep===1){
+    html+=`<div class="form-group"><label class="form-label">Result Name</label><input class="form-input" type="text" id="result-name" value="${esc(newName)}" placeholder="e.g. Final Exams 2025…" autocomplete="off"></div><button class="btn btn-primary" style="width:100%" onclick="step1Next()">Continue →</button>`;
+  }else if(newStep===2){
+    html+=`<div style="margin-bottom:8px"><span class="form-label" style="margin:0">Subjects & Marks</span></div><div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px"><span>Subject</span><span>Obtained</span><span>Total</span><span></span></div><div id="subject-rows">${subjects.map(s=>renderSubjectRow(s)).join('')}</div>
     <button class="add-subject-btn" onclick="addSubject()" style="margin-top:4px;margin-bottom:20px">+ Add Subject</button>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" onclick="newStep=1;render()">&larr; Back</button>
-      <button class="btn btn-primary" style="flex:1" onclick="step2Next()">Calculate &rarr;</button>
+    <div style="display:flex;gap:10px"><button class="btn btn-ghost" onclick="newStep=1;render()">← Back</button><button class="btn btn-primary" style="flex:1" onclick="step2Next()">Calculate →</button></div>`;
+  }else if(newStep===3){
+    const calced=calcSubs(subjects.map(s=>({...s,obtained:Number(s.obtained||0),total:Number(s.total||100)})));
+    const overall=calcOverall(calced);
+    html+=`<div class="summary-hero"><div class="summary-pct">${overall.percentage}%</div><div class="summary-label">${esc(newName)}</div><div class="summary-stats"><div class="summary-stat"><div class="summary-stat-val">${overall.totalObtained}/${overall.grandTotal}</div><div class="summary-stat-key">Total Marks</div></div><div class="summary-stat"><div class="summary-stat-val"><span class="${badgeClass(overall.grade)}">${overall.grade}</span></div><div class="summary-stat-key">Grade</div></div><div class="summary-stat"><div class="summary-stat-val" style="color:${overall.passFail?'var(--green)':'var(--red)'}">${overall.passFail?'PASS':'FAIL'}</div><div class="summary-stat-key">Status</div></div></div></div>
+    <div class="divider"></div><table class="subject-table" style="margin-bottom:20px"><thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead><tbody>`;
+    calced.forEach(s=>{const n=s.subject==='Other'?(s.custom||'Other'):s.subject;html+=`<tr><td style="font-weight:500">${esc(n)}</td><td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td><td>${s.percentage}%</td><td><span class="${badgeClass(s.grade)}">${s.grade}</span></td><td><div class="prog-wrap"><div class="prog-fill" style="width:${s.percentage}%"></div></div></td></tr>`;});
+    html+=`</tbody></table><div style="display:flex;gap:10px"><button class="btn btn-ghost" onclick="newStep=2;render()">← Edit</button><button class="btn btn-primary" style="flex:1" onclick="saveResult()">💾 Save Result</button></div>`;
+  }
+  html+='</div>';el.innerHTML=html;
+}
+
+function renderSubjectRow(s){
+  const opts=SUBJECTS.map(sub=>`<option value="${sub}" ${s.subject===sub?'selected':''}>${sub}</option>`).join('');
+  return`<div class="subject-row" id="srow-${s.id}"><div><select class="form-input" onchange="updateSubject(${s.id},'subject',this.value)">${opts}</select>${s.subject==='Other'?`<input class="form-input" style="margin-top:6px" type="text" placeholder="Subject name" value="${esc(s.custom||'')}" oninput="updateSubject(${s.id},'custom',this.value)">`:''}
+  </div><input class="form-input" type="number" min="0" placeholder="0" value="${s.obtained}" oninput="updateSubject(${s.id},'obtained',this.value)"><input class="form-input" type="number" min="1" placeholder="100" value="${s.total}" oninput="updateSubject(${s.id},'total',this.value)"><button class="remove-btn" onclick="removeSubject(${s.id})">✕</button></div>`;
+}
+
+function renderDetail(el){
+  const r=loadResults().find(x=>x.id===detailId);if(!r){goHome();return;}
+  let html=`<div class="detail-header"><button class="back-btn" onclick="goHome()">←</button><input class="detail-name-input" id="detail-name" value="${esc(r.name)}" onchange="updateDetailName(this.value)" onblur="updateDetailName(this.value)"></div>
+  <div class="detail-hero"><div class="detail-pct">${r.overall.percentage}%</div><div class="detail-marks">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div><div class="detail-badges"><span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span><span class="pass-badge ${r.overall.passFail?'pass':'fail'}">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span></div></div>
+  <div class="section-label">Subject Breakdown</div><div class="subjects-card"><table class="subject-table"><thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead><tbody>`;
+  r.subjects.forEach(s=>{const n=s.subject==='Other'?(s.custom||'Other'):s.subject;html+=`<tr><td style="font-weight:500">${esc(n)}</td><td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td><td>${s.percentage}%</td><td><span class="${badgeClass(s.grade)}">${s.grade}</span></td><td><div class="prog-wrap"><div class="prog-fill" style="width:${Math.min(s.percentage,100)}%"></div></div></td></tr>`;});
+  html+=`</tbody></table></div><div class="detail-actions"><button class="btn btn-ghost" onclick="editResult('${r.id}')">✏️ Edit</button><button class="btn btn-danger" onclick="toggleConfirm()">🗑️ Delete</button><button class="btn btn-print btn-sm" onclick="printResult('${r.id}')">🖨 Print / PDF</button></div>
+  <div id="confirm-box" style="display:${showConfirmDelete?'block':'none'}"><div class="confirm-box"><div class="confirm-text">Delete "<strong>${esc(r.name)}</strong>"? This cannot be undone.</div><div class="confirm-actions"><button class="btn btn-ghost btn-sm" onclick="toggleConfirm()">Cancel</button><button class="btn btn-danger btn-sm" onclick="deleteResult('${r.id}')">Delete</button></div></div></div>`;
+  el.innerHTML=html;
+}
+
+function renderCustomize(){
+  document.getElementById('header-btn').innerHTML='';
+  const savedId=localStorage.getItem('gradix_theme')||'blue';
+  let html=`<div class="customize-wrap"><div class="customize-title">Customize</div><div class="customize-sub">Choose your orb theme. The gradient transitions fluidly.</div><div class="orb-grid">`;
+  THEMES.forEach(t=>{
+    const sel=t.id===savedId;
+    const [r1,g1,b1]=t.o1,[r2,g2,b2]=t.o2;
+    const bg=`radial-gradient(circle at 35% 35%,rgba(${r1},${g1},${b1},1) 0%,rgba(${r2},${g2},${b2},0.7) 55%,rgba(${r1},${g1},${b1},0.3) 100%)`;
+    html+=`<div class="orb-card ${sel?'selected':''}" onclick="selectTheme('${t.id}')" style="border-color:${sel?t.accent:'var(--glass-border)'};${sel?'border-width:2px;box-shadow:0 0 0 1px '+t.accent+'33':''}" >
+      <div class="orb-preview" style="background:${bg};box-shadow:0 0 20px ${t.glow},0 0 40px ${t.gs}"></div>
+      <div class="orb-name" style="${sel?'color:'+t.accent:''}">${t.name.split(' ')[0]}</div>
+      ${sel?`<div style="position:absolute;top:7px;right:9px;font-size:11px;color:${t.accent};font-weight:700">✓</div>`:''}
     </div>`;
-  } else if (newStep === 3) {
-    const calced = calcSubjects(subjects.map(s => ({...s, obtained: Number(s.obtained||0), total: Number(s.total||100)})));
-    const overall = calcOverall(calced);
-    html += `<div class="summary-hero">
-      <div class="summary-pct">${overall.percentage}%</div>
-      <div class="summary-label">${esc(newName)}</div>
-      <div class="summary-stats">
-        <div class="summary-stat"><div class="summary-stat-val">${overall.totalObtained}/${overall.grandTotal}</div><div class="summary-stat-key">Total Marks</div></div>
-        <div class="summary-stat"><div class="summary-stat-val"><span class="${badgeClass(overall.grade)}">${overall.grade}</span></div><div class="summary-stat-key">Grade</div></div>
-        <div class="summary-stat"><div class="summary-stat-val" style="color:${overall.passFail?'var(--green)':'var(--red)'}">${overall.passFail?'PASS':'FAIL'}</div><div class="summary-stat-key">Status</div></div>
+  });
+  html+=`</div></div>`;
+  document.getElementById('main-content').innerHTML=html;
+}
+
+function selectTheme(id){const t=THEMES.find(x=>x.id===id);if(!t)return;applyTheme(t);renderCustomize();}
+
+function goHome(){view='dashboard';editId=null;detailId=null;showConfirmDelete=false;activeTab='home';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-home').classList.add('active');render();}
+function startNew(){view='new';editId=null;newStep=1;newName='';subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}];subjIdCounter=2;render();}
+function openDetail(id){view='detail';detailId=id;showConfirmDelete=false;render();}
+function toggleConfirm(){showConfirmDelete=!showConfirmDelete;render();}
+function step1Next(){const v=document.getElementById('result-name').value.trim();if(!v){flashInput('result-name');return;}newName=v;newStep=2;render();}
+function step2Next(){syncDOM();let ok=true;subjects.forEach(s=>{if(!s.subject||s.obtained===''||s.total===''||Number(s.obtained)>Number(s.total))ok=false;});if(!ok){alert('Fill all rows correctly (obtained ≤ total).');return;}newStep=3;render();}
+function addSubject(){syncDOM();subjects.push({id:subjIdCounter++,subject:'',custom:'',obtained:'',total:'100'});refreshRows();}
+function removeSubject(id){syncDOM();if(subjects.length<=1)return;subjects=subjects.filter(s=>s.id!==id);refreshRows();}
+function refreshRows(){const c=document.getElementById('subject-rows');if(c)c.innerHTML=subjects.map(s=>renderSubjectRow(s)).join('');}
+function updateSubject(id,f,v){const s=subjects.find(x=>x.id===id);if(s){s[f]=v;if(f==='subject')refreshRows();}}
+function syncDOM(){subjects.forEach(s=>{const el=document.getElementById('srow-'+s.id);if(!el)return;const sel=el.querySelector('select'),inps=el.querySelectorAll('input[type="number"]'),cust=el.querySelector('input[type="text"]');if(sel)s.subject=sel.value;if(inps[0])s.obtained=inps[0].value;if(inps[1])s.total=inps[1].value;if(cust)s.custom=cust.value;});}
+function saveResult(){const calced=calcSubs(subjects.map(s=>({...s,obtained:Number(s.obtained||0),total:Number(s.total||100)})));const overall=calcOverall(calced);const results=loadResults();if(editId){const idx=results.findIndex(r=>r.id===editId);if(idx>-1)results[idx]={...results[idx],name:newName,subjects:calced,overall};}else results.unshift({id:'r_'+Date.now(),name:newName,date:new Date().toISOString(),subjects:calced,overall});saveResults(results);goHome();}
+function editResult(id){const r=loadResults().find(x=>x.id===id);if(!r)return;editId=id;view='new';newStep=1;newName=r.name;subjects=r.subjects.map((s,i)=>({id:i+1,subject:s.subject,custom:s.custom||'',obtained:String(s.obtained),total:String(s.total)}));subjIdCounter=subjects.length+1;render();}
+function deleteResult(id){saveResults(loadResults().filter(r=>r.id!==id));goHome();}
+function updateDetailName(val){const results=loadResults(),idx=results.findIndex(r=>r.id===detailId);if(idx>-1&&val.trim()){results[idx].name=val.trim();saveResults(results);}}
+function flashInput(id){const el=document.getElementById(id);if(!el)return;el.style.borderColor='var(--red)';el.style.boxShadow='0 0 0 3px rgba(255,90,126,0.15)';setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},1000);}
+function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+
+function printResult(id){
+  const results=loadResults();
+  const r=results.find(x=>x.id===id);
+  if(!r)return;
+  const tid=localStorage.getItem('gradix_theme')||'blue';
+  const theme=THEMES.find(t=>t.id===tid)||THEMES[0];
+  const [r1,g1,b1]=theme.o1,[r2,g2,b2]=theme.o2;
+
+  const subRows=r.subjects.map(s=>{
+    const n=s.subject==='Other'?(s.custom||'Other'):s.subject;
+    const gc=s.grade==='A+'?'#3dffa0':s.grade==='A'?theme.accent:s.grade==='B'?'#b87fff':s.grade==='C'?'#ffd060':s.grade==='D'?'#ff9a45':s.grade==='E'?'#ff8fa7':'#ff5a7e';
+    const pBarW=Math.min(s.percentage,100);
+    return`<tr><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);font-weight:500">${n}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);color:rgba(200,215,245,0.65)">${s.obtained}/${s.total}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)">${s.percentage}%</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><span style="display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:${gc}22;color:${gc};border:1px solid ${gc}44">${s.grade}</span></td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden"><div style="width:${pBarW}%;height:100%;background:${theme.accent};border-radius:2px"></div></div></td></tr>`;
+  }).join('');
+
+  const passColor=r.overall.passFail?'#3dffa0':'#ff5a7e';
+  const gradeCol=r.overall.grade==='A+'?'#3dffa0':r.overall.grade==='A'?theme.accent:r.overall.grade==='B'?'#b87fff':r.overall.grade==='C'?'#ffd060':r.overall.grade==='D'?'#ff9a45':r.overall.grade==='E'?'#ff8fa7':'#ff5a7e';
+  const dateStr=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Gradix - ${r.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:#040810;color:#e8f0fe;font-family:'Outfit',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @media print{.no-print{display:none!important}body{margin:0}}
+  </style></head><body>
+  <div style="max-width:720px;margin:0 auto;padding:40px 32px;min-height:100vh;position:relative;background:
+    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(${r1},${g1},${b1},0.45) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%,rgba(${r2},${g2},${b2},0.3) 0%,transparent 55%),
+    linear-gradient(160deg,#040810 0%,#070d1c 40%,#0b1428 100%)">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08)">
+      <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#fff 30%,${theme.accent});-webkit-background-clip:text;-webkit-text-fill-color:transparent">Gradix</div>
+      <div style="font-size:12px;color:rgba(150,175,220,0.5)">${dateStr}</div>
+    </div>
+
+    <!-- Result name -->
+    <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;margin-bottom:24px;color:#e8f0fe">${r.name}</div>
+
+    <!-- Hero stats -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px;text-align:center;margin-bottom:24px">
+      <div style="font-family:'Sora',sans-serif;font-size:72px;font-weight:800;background:linear-gradient(135deg,#fff 10%,${theme.bright} 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">${r.overall.percentage}%</div>
+      <div style="font-size:15px;color:rgba(200,215,245,0.65);margin-top:8px">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:14px">
+        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${gradeCol}22;color:${gradeCol};border:1px solid ${gradeCol}44">${r.overall.grade}</span>
+        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${passColor}1a;color:${passColor};border:1px solid ${passColor}33">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span>
       </div>
     </div>
-    <div class="divider"></div>
-    <table class="subject-table" style="margin-bottom:20px">
-      <thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead>
-      <tbody>`;
-    calced.forEach(s => {
-      const name = s.subject === 'Other' ? (s.custom||'Other') : s.subject;
-      html += `<tr>
-        <td style="font-weight:500">${esc(name)}</td>
-        <td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td>
-        <td>${s.percentage}%</td>
-        <td><span class="${badgeClass(s.grade)}">${s.grade}</span></td>
-        <td><div class="prog-wrap"><div class="prog-fill" style="width:${s.percentage}%"></div></div></td>
-      </tr>`;
-    });
-    html += `</tbody></table>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" onclick="newStep=2;render()">&larr; Edit</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveResult()">&#128190; Save Result</button>
-    </div>`;
-  }
-  html += '</div>';
-  el.innerHTML = html;
-}
 
-function renderSubjectRow(s) {
-  const selOpts = SUBJECTS.map(sub => `<option value="${sub}" ${s.subject===sub?'selected':''}>${sub}</option>`).join('');
-  return `<div class="subject-row" id="srow-${s.id}">
-    <div>
-      <select class="form-input" onchange="updateSubject(${s.id},'subject',this.value)">${selOpts}</select>
-      ${s.subject==='Other' ? `<input class="form-input" style="margin-top:6px" type="text" placeholder="Subject name" value="${esc(s.custom||'')}" oninput="updateSubject(${s.id},'custom',this.value)">` : ''}
+    <!-- Subject breakdown -->
+    <div style="font-size:11px;font-weight:700;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Subject Breakdown</div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;margin-bottom:32px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Subject</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Marks</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">%</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Grade</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Bar</th></tr></thead>
+        <tbody>${subRows}</tbody>
+      </table>
     </div>
-    <input class="form-input" type="number" min="0" placeholder="0" value="${s.obtained}" oninput="updateSubject(${s.id},'obtained',this.value)">
-    <input class="form-input" type="number" min="1" placeholder="100" value="${s.total}" oninput="updateSubject(${s.id},'total',this.value)">
-    <button class="remove-btn" onclick="removeSubject(${s.id})">&#10005;</button>
-  </div>`;
-}
 
-function renderDetail(el) {
-  const results = loadResults();
-  const r = results.find(x => x.id === detailId);
-  if (!r) { goHome(); return; }
-  let html = `<div class="detail-header">
-    <button class="back-btn" onclick="goHome()">&larr;</button>
-    <input class="detail-name-input" id="detail-name" value="${esc(r.name)}" onchange="updateDetailName(this.value)" onblur="updateDetailName(this.value)">
-  </div>
-  <div class="detail-hero">
-    <div class="detail-pct">${r.overall.percentage}%</div>
-    <div class="detail-marks">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
-    <div class="detail-badges">
-      <span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span>
-      <span class="pass-badge ${r.overall.passFail?'pass':'fail'}">${r.overall.passFail?'&#10003; PASS':'&#10007; FAIL'}</span>
+    <!-- Footer -->
+    <div style="text-align:center;font-size:12px;color:rgba(150,175,220,0.3);padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)">Generated by <span style="color:${theme.accent}">Gradix</span></div>
+
+    <!-- Print button -->
+    <div class="no-print" style="text-align:center;margin-top:28px">
+      <button onclick="window.print()" style="padding:12px 32px;border-radius:50px;background:${theme.accent};color:#000;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:0 0 20px ${theme.glow}">🖨 Print / Save as PDF</button>
     </div>
   </div>
-  <div class="section-label">Subject Breakdown</div>
-  <div class="subjects-card">
-    <table class="subject-table">
-      <thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead>
-      <tbody>`;
-  r.subjects.forEach(s => {
-    const name = s.subject === 'Other' ? (s.custom||'Other') : s.subject;
-    html += `<tr>
-      <td style="font-weight:500">${esc(name)}</td>
-      <td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td>
-      <td>${s.percentage}%</td>
-      <td><span class="${badgeClass(s.grade)}">${s.grade}</span></td>
-      <td><div class="prog-wrap"><div class="prog-fill" style="width:${Math.min(s.percentage,100)}%"></div></div></td>
-    </tr>`;
-  });
-  html += `</tbody></table></div>
-  <div class="detail-actions">
-    <button class="btn btn-ghost" onclick="editResult('${r.id}')">&#9999;&#65039; Edit</button>
-    <button class="btn btn-danger" onclick="toggleConfirm()">&#128465;&#65039; Delete</button>
-  </div>
-  <div id="confirm-box" style="display:${showConfirmDelete?'block':'none'}">
-    <div class="confirm-box">
-      <div class="confirm-text">Are you sure you want to delete "<strong>${esc(r.name)}</strong>"? This cannot be undone.</div>
-      <div class="confirm-actions">
-        <button class="btn btn-ghost btn-sm" onclick="toggleConfirm()">Cancel</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteResult('${r.id}')">Delete</button>
-      </div>
-    </div>
-  </div>`;
-  el.innerHTML = html;
+  </body></html>`);
+  win.document.close();
 }
 
-function goHome() { view='dashboard'; editId=null; detailId=null; showConfirmDelete=false; render(); }
-function startNew() {
-  view='new'; editId=null; newStep=1; newName='';
-  subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}]; subjIdCounter=2;
-  render();
-}
-function openDetail(id) { view='detail'; detailId=id; showConfirmDelete=false; render(); }
-function toggleConfirm() { showConfirmDelete=!showConfirmDelete; render(); }
-
-function step1Next() {
-  const val = document.getElementById('result-name').value.trim();
-  if (!val) { flashInput('result-name'); return; }
-  newName = val; newStep=2; render();
-}
-function step2Next() {
-  syncSubjectsFromDOM();
-  let valid = true;
-  subjects.forEach(s => {
-    if (!s.subject) { valid=false; return; }
-    if (s.obtained===''||s.total==='') { valid=false; return; }
-    if (Number(s.obtained) > Number(s.total)) { valid=false; return; }
-  });
-  if (!valid || !subjects.length) { alert('Please fill all subject rows correctly (obtained \u2264 total).'); return; }
-  newStep=3; render();
-}
-
-function addSubject() {
-  syncSubjectsFromDOM();
-  subjects.push({id:subjIdCounter++, subject:'', custom:'', obtained:'', total:'100'});
-  renderSubjectRowsOnly();
-}
-function removeSubject(id) {
-  syncSubjectsFromDOM();
-  if (subjects.length <= 1) return;
-  subjects = subjects.filter(s => s.id !== id);
-  renderSubjectRowsOnly();
-}
-function renderSubjectRowsOnly() {
-  const container = document.getElementById('subject-rows');
-  if (!container) return;
-  container.innerHTML = subjects.map(s => renderSubjectRow(s)).join('');
-}
-function updateSubject(id, field, val) {
-  const s = subjects.find(x => x.id===id);
-  if (s) { s[field]=val; if(field==='subject') renderSubjectRowsOnly(); }
-}
-function syncSubjectsFromDOM() {
-  subjects.forEach(s => {
-    const el = document.getElementById('srow-'+s.id);
-    if (!el) return;
-    const sel = el.querySelector('select');
-    const inps = el.querySelectorAll('input[type="number"]');
-    const cust = el.querySelector('input[type="text"]');
-    if (sel) s.subject = sel.value;
-    if (inps[0]) s.obtained = inps[0].value;
-    if (inps[1]) s.total = inps[1].value;
-    if (cust) s.custom = cust.value;
-  });
-}
-
-function saveResult() {
-  const calced = calcSubjects(subjects.map(s => ({...s, obtained: Number(s.obtained||0), total: Number(s.total||100)})));
-  const overall = calcOverall(calced);
-  const results = loadResults();
-  if (editId) {
-    const idx = results.findIndex(r => r.id === editId);
-    if (idx > -1) results[idx] = { ...results[idx], name: newName, subjects: calced, overall };
-  } else {
-    results.unshift({ id: 'r_'+Date.now(), name: newName, date: new Date().toISOString(), subjects: calced, overall });
-  }
-  saveResults(results);
-  goHome();
-}
-
-function editResult(id) {
-  const results = loadResults();
-  const r = results.find(x => x.id === id);
-  if (!r) return;
-  editId = id; view='new'; newStep=1; newName=r.name;
-  subjects = r.subjects.map((s,i) => ({id:i+1, subject:s.subject, custom:s.custom||'', obtained:String(s.obtained), total:String(s.total)}));
-  subjIdCounter = subjects.length+1;
-  render();
-}
-
-function deleteResult(id) {
-  let results = loadResults();
-  results = results.filter(r => r.id !== id);
-  saveResults(results);
-  goHome();
-}
-
-function updateDetailName(val) {
-  const results = loadResults();
-  const idx = results.findIndex(r => r.id === detailId);
-  if (idx > -1 && val.trim()) { results[idx].name = val.trim(); saveResults(results); }
-}
-
-function flashInput(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.style.borderColor = 'var(--red)';
-  el.style.boxShadow = '0 0 0 3px rgba(255,90,126,0.15)';
-  setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1000);
-}
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-}
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-render();
+loadTheme();render();
 </script>
 </body>
 </html>

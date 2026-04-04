@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.1.0] — 1st Update
+
+### Added
+- Bug Fixes.
+- Added 8 themes under the themes option.
+- Added option to print result cards and save result cards as PDF, although not fully functional yet.
+
+
 ## [1.0.0] — Initial Release
 
 ### Added
@@ -24,3 +32,4 @@ All notable changes to this project are documented here.
 - Sora + Outfit typography
 - Fully responsive layout (mobile, tablet, desktop)
 - Zero dependencies — single HTML file
+
