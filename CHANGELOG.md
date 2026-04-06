@@ -8,7 +8,7 @@ All notable changes to this project are documented here.
 - Print/Save as PDF option is now fully functional.
 
 ---
-## [1.2.0] — 2st Update - ✨ Insight
+## [1.2.0] — 2st Update - ✨ Insights
 
 ### Added
 - Added ✨ Insights Tab - get a quick overview of every aspect of your result. Try it out now under insights tab in any of your result. 
