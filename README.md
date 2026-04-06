@@ -41,6 +41,11 @@ No accounts. No cloud. No tracking. Everything lives on your device.
 
 ---
 
+> [!NOTE]
+> Added ✨ Insights Tab in v 1.2.0 - get a quick overview of every aspect of your result. Try it out now under insights tab in any of your result. Check the changelog for more details.
+
+--- 
+
 ## Features
 
 - **Result Calculator** — Enter marks for each subject and get your overall percentage instantly

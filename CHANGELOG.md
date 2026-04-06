@@ -3,16 +3,22 @@
 All notable changes to this project are documented here.
 
 ---
+## [1.2.0] — 2st Update - ✨ Insight
 
-## [1.1.0] — 1st Update
+### Added
+- Added ✨ Insights Tab - get a quick overview of every aspect of your result. Try it out now under insights tab in any of your result. 
+
+---
+## [1.1.0] — 1st Update - 🎨 Themes
 
 ### Added
 - Bug Fixes.
 - Added 8 themes under the themes option.
 - Added option to print result cards and save result cards as PDF, although not fully functional yet.
 
+---
 
-## [1.0.0] — Initial Release
+## [1.0.0] — 🤩 Initial Release
 
 ### Added
 - Result calculator with multi-subject marks entry

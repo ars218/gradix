@@ -10,46 +10,93 @@
 :root{
   --accent:#4f9eff;--accent-bright:#70b4ff;
   --accent-glow:rgba(79,158,255,0.25);--accent-glow-soft:rgba(79,158,255,0.1);
-  --glass-bg:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--glass-hover:rgba(255,255,255,0.07);
+  --glass-bg:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.09);--glass-hover:rgba(255,255,255,0.07);
   --text-primary:#e8f0fe;--text-secondary:rgba(200,215,245,0.65);--text-muted:rgba(150,175,220,0.4);
   --red:#ff5a7e;--green:#3dffa0;--yellow:#ffd060;--orange:#ff9a45;--purple:#b87fff;
-  --radius:16px;--radius-sm:10px;--transition:0.25s cubic-bezier(0.4,0,0.2,1);
+  --radius:16px;--radius-sm:10px;--t:0.25s cubic-bezier(0.4,0,0.2,1);
 }
-html,body{height:100%;background:#040810;color:var(--text-primary);font-family:'Outfit',sans-serif;overflow-x:hidden}
-#orb-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* Light mode */
+body.light{
+  --glass-bg:rgba(255,255,255,0.6);--glass-border:rgba(0,0,0,0.09);--glass-hover:rgba(255,255,255,0.8);
+  --text-primary:#0d1428;--text-secondary:rgba(15,35,80,0.68);--text-muted:rgba(30,55,110,0.42);
+}
+body.light{background:#eef2ff!important}
+body.light .header{background:rgba(238,242,255,0.82)!important}
+body.light .bottom-nav{background:rgba(238,242,255,0.9)!important}
+body.light .logo{background:linear-gradient(135deg,#0d1428 30%,var(--accent))!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+body.light .form-input{background:rgba(255,255,255,0.75)!important;border-color:rgba(0,0,0,0.1)!important;color:var(--text-primary)!important}
+body.light select.form-input option{background:#eef2ff;color:#0d1428}
+body.light .card-pct,.summary-pct,.detail-pct{background:linear-gradient(135deg,#0d1428 10%,var(--accent))!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+body.light .detail-name-input{color:var(--text-primary)!important}
+body.light .subject-table td{color:var(--text-primary)}
+body.light .subject-table tr:hover td{background:rgba(0,0,0,0.02)}
+body.light .prog-wrap{background:rgba(0,0,0,0.07)}
+body.light #orb-canvas{opacity:0.18}
+
+html,body{height:100%;background:#040810;color:var(--text-primary);font-family:'Outfit',sans-serif;overflow-x:hidden;transition:background 0.5s ease}
+#orb-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;transition:opacity 0.6s ease}
 body::after{content:'';position:fixed;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:.4;pointer-events:none}
 #app{position:relative;z-index:1;min-height:100vh;padding-bottom:72px}
-.header{padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--glass-border);background:rgba(4,8,16,0.65);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
-.logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(4,8,16,0.88);backdrop-filter:blur(24px);border-top:1px solid var(--glass-border);display:flex;height:64px;padding:0 16px;gap:8px;align-items:center;justify-content:center}
-.nav-tab{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 12px;border-radius:14px;cursor:pointer;transition:var(--transition);background:transparent;border:none;color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500}
+
+/* Header */
+.header{padding:16px 20px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--glass-border);background:rgba(4,8,16,0.65);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;transition:background 0.4s ease;gap:12px}
+.logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;flex-shrink:0}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+
+/* Dark/light toggle */
+.dl-toggle{position:relative;width:54px;height:29px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:50px;cursor:pointer;transition:background 0.45s ease,border-color 0.45s ease;backdrop-filter:blur(10px);flex-shrink:0}
+body.light .dl-toggle{background:rgba(79,158,255,0.14);border-color:rgba(79,158,255,0.32)}
+.dl-knob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,0.9);box-shadow:0 1px 8px rgba(0,0,0,0.35);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1),box-shadow 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1}
+body.light .dl-knob{transform:translateX(25px);box-shadow:0 1px 8px rgba(79,158,255,0.3)}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(4,8,16,0.88);backdrop-filter:blur(24px);border-top:1px solid var(--glass-border);display:flex;height:64px;padding:0 16px;gap:8px;align-items:center;justify-content:center;transition:background 0.4s ease}
+.nav-tab{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 12px;border-radius:14px;cursor:pointer;transition:var(--t);background:transparent;border:none;color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500}
 .nav-tab .nav-icon{font-size:20px;transition:transform 0.2s ease}
 .nav-tab.active{color:var(--accent);background:rgba(79,158,255,0.08)}
 .nav-tab.active .nav-icon{transform:scale(1.12)}
 .nav-tab:hover:not(.active){color:var(--text-secondary);background:var(--glass-bg)}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:50px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);border:none;outline:none;white-space:nowrap}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:50px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--t);border:none;outline:none;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent-glow),0 4px 15px rgba(79,158,255,0.3)}
 .btn-primary:hover{background:var(--accent-bright);box-shadow:0 0 30px rgba(79,158,255,0.5),0 6px 20px rgba(79,158,255,0.4);transform:translateY(-1px)}
 .btn-ghost{background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-secondary)}
 .btn-ghost:hover{background:var(--glass-hover);color:var(--text-primary);border-color:rgba(255,255,255,0.14)}
 .btn-danger{background:rgba(255,90,126,0.12);border:1px solid rgba(255,90,126,0.25);color:var(--red)}
 .btn-danger:hover{background:rgba(255,90,126,0.2)}
+.btn-print{background:rgba(79,158,255,0.1);border:1px solid rgba(79,158,255,0.28);color:var(--accent)}
+.btn-print:hover{background:rgba(79,158,255,0.2)}
 .btn-sm{padding:7px 14px;font-size:13px}
+
 .main{max-width:960px;margin:0 auto;padding:28px 20px 20px}
+
+/* Dashboard */
 .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.dash-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700}
+.dash-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--text-primary)}
 .dash-subtitle{font-size:14px;color:var(--text-secondary);margin-top:3px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:var(--transition);backdrop-filter:blur(12px);position:relative;overflow:hidden;animation:cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both}
+
+/* Cards */
+.card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:var(--t);backdrop-filter:blur(12px);position:relative;overflow:hidden;animation:cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both}
 .card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(135deg,rgba(79,158,255,0.04),transparent);opacity:0;transition:opacity 0.25s}
-.card:hover{border-color:rgba(79,158,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px var(--accent-glow-soft)}
+.card:hover{border-color:rgba(79,158,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.35),0 0 20px var(--accent-glow-soft)}
 .card:hover::before{opacity:1}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.card-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;margin-bottom:14px}
+.card-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text-primary)}
 .card-pct{font-family:'Sora',sans-serif;font-size:42px;font-weight:800;line-height:1;margin-bottom:4px;background:linear-gradient(135deg,#fff,var(--accent-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .card-marks{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
 .card-footer{display:flex;align-items:center;justify-content:space-between}
 .card-meta{font-size:12px;color:var(--text-muted)}
+
+/* Empty */
+.empty{grid-column:1/-1;text-align:center;padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.empty-icon{font-size:56px;opacity:0.3}
+.empty-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:600;color:var(--text-secondary)}
+.empty-sub{font-size:14px;color:var(--text-muted);max-width:300px;line-height:1.6}
+
+/* Badges */
 .badge{display:inline-flex;align-items:center;justify-content:center;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:0.3px}
 .badge-Aplus{background:rgba(61,255,160,0.15);color:var(--green);border:1px solid rgba(61,255,160,0.25)}
 .badge-A{background:rgba(79,158,255,0.15);color:var(--accent-bright);border:1px solid rgba(79,158,255,0.25)}
@@ -58,93 +105,127 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background-image:url("da
 .badge-D{background:rgba(255,154,69,0.12);color:var(--orange);border:1px solid rgba(255,154,69,0.2)}
 .badge-E{background:rgba(255,90,126,0.1);color:#ff8fa7;border:1px solid rgba(255,90,126,0.2)}
 .badge-F{background:rgba(255,90,126,0.15);color:var(--red);border:1px solid rgba(255,90,126,0.3)}
-.empty{grid-column:1/-1;text-align:center;padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:16px}
-.empty-icon{font-size:56px;opacity:0.3}
-.empty-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:600;color:var(--text-secondary)}
-.empty-sub{font-size:14px;color:var(--text-muted);max-width:300px;line-height:1.6}
+
+/* Forms */
 .form-group{margin-bottom:20px}
 .form-label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.3px}
-.form-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:var(--transition)}
+.form-input{width:100%;padding:12px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:var(--t)}
 .form-input:focus{border-color:rgba(79,158,255,0.5);background:rgba(79,158,255,0.05);box-shadow:0 0 0 3px rgba(79,158,255,0.08)}
 .form-input::placeholder{color:var(--text-muted)}
 select.form-input{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234f9eff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 select.form-input option{background:#0d1830}
 .subject-row{display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px;align-items:end;margin-bottom:10px;animation:cardIn 0.25s ease both}
-.remove-btn{width:34px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:rgba(255,90,126,0.08);border:1px solid rgba(255,90,126,0.15);color:var(--red);cursor:pointer;font-size:15px;transition:var(--transition)}
+.remove-btn{width:34px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:rgba(255,90,126,0.08);border:1px solid rgba(255,90,126,0.15);color:var(--red);cursor:pointer;font-size:15px;transition:var(--t)}
 .remove-btn:hover{background:rgba(255,90,126,0.18)}
-.add-subject-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius-sm);background:rgba(79,158,255,0.06);border:1px dashed rgba(79,158,255,0.25);color:var(--accent);font-size:14px;font-weight:500;cursor:pointer;transition:var(--transition);width:100%;justify-content:center;font-family:'Outfit',sans-serif}
+.add-subject-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius-sm);background:rgba(79,158,255,0.06);border:1px dashed rgba(79,158,255,0.25);color:var(--accent);font-size:14px;font-weight:500;cursor:pointer;transition:var(--t);width:100%;justify-content:center;font-family:'Outfit',sans-serif}
 .add-subject-btn:hover{background:rgba(79,158,255,0.12);border-color:rgba(79,158,255,0.4)}
+
+/* Steps */
 .steps{display:flex;align-items:center;gap:8px;margin-bottom:28px}
-.step-dot{width:8px;height:8px;border-radius:50%;background:var(--glass-border);transition:var(--transition)}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--glass-border);transition:var(--t)}
 .step-dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent-glow);width:24px;border-radius:4px}
 .step-dot.done{background:rgba(79,158,255,0.4)}
+
+/* Summary */
 .summary-hero{text-align:center;padding:24px 0 20px}
 .summary-pct{font-family:'Sora',sans-serif;font-size:64px;font-weight:800;background:linear-gradient(135deg,#fff 20%,var(--accent-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
 .summary-label{font-size:14px;color:var(--text-secondary);margin-top:6px}
 .summary-stats{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
-.summary-stat{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:10px 18px;text-align:center}
-.summary-stat-val{font-family:'Sora',sans-serif;font-size:18px;font-weight:700}
+.summary-stat{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:10px 18px;text-align:center;backdrop-filter:blur(8px)}
+.summary-stat-val{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--text-primary)}
 .summary-stat-key{font-size:11px;color:var(--text-muted);margin-top:2px}
 .divider{height:1px;background:var(--glass-border);margin:20px 0}
+
+/* Tables */
 .subject-table{width:100%;border-collapse:collapse}
 .subject-table th{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;padding:0 12px 10px;text-align:left}
-.subject-table td{padding:10px 12px;font-size:14px;border-top:1px solid var(--glass-border)}
-.subject-table tr:hover td{background:rgba(255,255,255,0.02)}
+.subject-table td{padding:10px 12px;font-size:14px;border-top:1px solid var(--glass-border);color:var(--text-primary)}
+.subject-table tr:hover td{background:rgba(79,158,255,0.02)}
 .prog-wrap{width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 0.6s ease}
-.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;font-size:16px;color:var(--text-secondary);transition:var(--transition)}
+
+/* Detail */
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;font-size:16px;color:var(--text-secondary);transition:var(--t);flex-shrink:0}
 .back-btn:hover{background:var(--glass-hover);color:var(--text-primary)}
-.detail-name-input{background:transparent;border:none;outline:none;font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--text-primary);width:100%;border-bottom:2px solid transparent;transition:var(--transition)}
+.detail-name-input{background:transparent;border:none;outline:none;font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:var(--text-primary);width:100%;border-bottom:2px solid transparent;transition:var(--t);min-width:0}
 .detail-name-input:focus{border-bottom-color:var(--accent)}
-.detail-hero{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:28px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.detail-hero{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:28px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;backdrop-filter:blur(12px)}
 .detail-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(79,158,255,0.06),transparent 70%)}
-.detail-pct{font-family:'Sora',sans-serif;font-size:72px;font-weight:800;background:linear-gradient(135deg,#fff 10%,var(--accent-bright) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;position:relative}
+.detail-pct{font-family:'Sora',sans-serif;font-size:68px;font-weight:800;background:linear-gradient(135deg,#fff 10%,var(--accent-bright) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;position:relative}
 .detail-marks{font-size:15px;color:var(--text-secondary);margin-top:8px;position:relative}
 .detail-badges{display:flex;justify-content:center;gap:10px;margin-top:14px;position:relative}
 .pass-badge{padding:4px 16px;border-radius:50px;font-size:12px;font-weight:700}
 .pass-badge.pass{background:rgba(61,255,160,0.12);color:var(--green);border:1px solid rgba(61,255,160,0.25)}
 .pass-badge.fail{background:rgba(255,90,126,0.12);color:var(--red);border:1px solid rgba(255,90,126,0.25)}
-.section-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
-.subjects-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
-.detail-actions{display:flex;gap:10px;flex-wrap:wrap}
-.confirm-box{background:rgba(255,90,126,0.06);border:1px solid rgba(255,90,126,0.2);border-radius:var(--radius-sm);padding:16px;margin-top:16px}
+.section-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.subjects-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;backdrop-filter:blur(12px)}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.confirm-box{background:rgba(255,90,126,0.06);border:1px solid rgba(255,90,126,0.2);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px}
 .confirm-text{font-size:14px;color:var(--text-secondary);margin-bottom:14px}
 .confirm-actions{display:flex;gap:10px}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.modal-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700}
+.modal-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--text-primary)}
+
+/* ── View toggle (Result / Insights) ── */
+.view-toggle-wrap{display:flex;justify-content:center;margin-bottom:20px}
+.view-toggle{display:inline-flex;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:50px;padding:4px;gap:2px;backdrop-filter:blur(16px)}
+.vtb{padding:8px 20px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);background:transparent;color:var(--text-muted)}
+.vtb.active{color:#000;background:var(--accent);box-shadow:0 0 16px var(--accent-glow),0 2px 8px rgba(0,0,0,0.25)}
+.vtb:not(.active):hover{color:var(--text-secondary)}
+
+/* ── Insights panel ── */
+.insights-panel{animation:insightIn 0.4s cubic-bezier(0.4,0,0.2,1) both}
+@keyframes insightIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Score ring */
+.score-wrap{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:28px 20px;text-align:center;margin-bottom:16px;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.score-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(79,158,255,0.07),transparent 65%)}
+.score-label{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary);margin-top:10px;position:relative;z-index:1}
+.score-verdict{font-size:13px;color:var(--text-muted);margin-top:5px;line-height:1.5;position:relative;z-index:1;max-width:300px;margin-left:auto;margin-right:auto}
+
+/* Insight cards */
+.insight-section{margin-bottom:18px;animation:cardIn 0.35s ease both}
+.insight-section-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.insight-icon-wrap{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.insight-section-title{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary)}
+.insight-section-sub{font-size:11px;color:var(--text-muted);margin-top:1px}
+
+.insight-pill{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);margin-bottom:8px;backdrop-filter:blur(8px);transition:var(--t);animation:cardIn 0.3s ease both}
+.insight-pill:hover{background:var(--glass-hover);border-color:rgba(79,158,255,0.15)}
+.pill-icon{font-size:17px;flex-shrink:0;margin-top:1px;line-height:1}
+.pill-text{font-size:13px;color:var(--text-secondary);line-height:1.55}
+.pill-text strong{color:var(--text-primary);font-weight:600}
+
+/* Subject insight bars */
+.subj-insight-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--glass-border)}
+.subj-insight-row:first-child{border-top:none;padding-top:0}
+.sir-name{font-size:13px;font-weight:500;color:var(--text-primary);min-width:90px;flex-shrink:0}
+.sir-bar-wrap{flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.sir-bar{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.sir-pct{font-size:12px;font-weight:600;color:var(--text-secondary);min-width:36px;text-align:right;flex-shrink:0}
+
 /* Customize */
 .customize-wrap{max-width:560px;margin:0 auto}
-.customize-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px}
+.customize-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;color:var(--text-primary)}
 .customize-sub{font-size:14px;color:var(--text-secondary);margin-bottom:32px}
 .orb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.orb-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 14px;border-radius:var(--radius);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden}
+.orb-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 14px;border-radius:var(--radius);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;backdrop-filter:blur(8px)}
 .orb-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.16)}
 .orb-preview{width:52px;height:52px;border-radius:50%;flex-shrink:0;transition:transform 0.3s ease,box-shadow 0.3s ease}
 .orb-card:hover .orb-preview{transform:scale(1.1)}
 .orb-card.selected .orb-preview{transform:scale(1.15)}
 .orb-name{font-size:12px;font-weight:600;color:var(--text-secondary);text-align:center}
+
 @media(max-width:480px){
   .subject-row{grid-template-columns:1fr 70px 70px 30px;gap:6px}
-  .detail-pct{font-size:52px}
+  .detail-pct{font-size:50px}
   .grid{grid-template-columns:1fr}
   .orb-grid{gap:10px}
   .orb-preview{width:40px;height:40px}
   .orb-name{font-size:10px}
+  .vtb{padding:7px 13px;font-size:12px}
 }
-
-/* Print / PDF */
-@media print{
-  #orb-canvas,body::after,.bottom-nav,.header,.detail-actions,.confirm-box,.back-btn,.btn{display:none!important}
-  body,html{background:#040810!important;color:#e8f0fe!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #app{padding:0!important}
-  .print-page{display:block!important;padding:0;margin:0}
-}
-.print-page{display:none}
-
-.btn-print{background:rgba(79,158,255,0.12);border:1px solid rgba(79,158,255,0.3);color:var(--accent);font-family:'Outfit',sans-serif}
-.btn-print:hover{background:rgba(79,158,255,0.2)}
-
 </style>
 </head>
 <body>
@@ -152,7 +233,12 @@ select.form-input option{background:#0d1830}
 <div id="app">
   <header class="header">
     <div class="logo">Grad<span style="-webkit-text-fill-color:var(--accent)">ix</span></div>
-    <div id="header-btn"></div>
+    <div class="header-right">
+      <div id="header-btn"></div>
+      <div class="dl-toggle" onclick="toggleDarkLight()" title="Toggle light / dark">
+        <div class="dl-knob" id="dl-knob">🌙</div>
+      </div>
+    </div>
   </header>
   <main class="main" id="main-content"></main>
   <nav class="bottom-nav">
@@ -164,7 +250,9 @@ select.form-input option{background:#0d1830}
     </button>
   </nav>
 </div>
+
 <script>
+// ── Themes ──
 const THEMES=[
   {id:'blue',  name:'Blue Orb',  accent:'#4f9eff',bright:'#70b4ff',o1:[30,60,140], o2:[20,40,120], o3:[79,158,255], glow:'rgba(79,158,255,0.25)', gs:'rgba(79,158,255,0.1)'},
   {id:'green', name:'Green Orb', accent:'#3dffa0',bright:'#6fffc0',o1:[10,100,60],  o2:[5,80,45],   o3:[30,200,100], glow:'rgba(61,255,160,0.25)', gs:'rgba(61,255,160,0.1)'},
@@ -172,64 +260,64 @@ const THEMES=[
   {id:'orange',name:'Orange Orb',accent:'#ff9a45',bright:'#ffb870',o1:[140,60,10],  o2:[120,50,5],  o3:[255,140,50], glow:'rgba(255,154,69,0.25)', gs:'rgba(255,154,69,0.1)'},
   {id:'pink',  name:'Pink Orb',  accent:'#ff6eb4',bright:'#ff9fd0',o1:[140,20,100], o2:[120,10,80], o3:[255,80,180], glow:'rgba(255,110,180,0.25)',gs:'rgba(255,110,180,0.1)'},
   {id:'purple',name:'Purple Orb',accent:'#b87fff',bright:'#d0a8ff',o1:[80,20,140],  o2:[60,10,120], o3:[160,80,255], glow:'rgba(184,127,255,0.25)',gs:'rgba(184,127,255,0.1)'},
-  {id:'white', name:'White Orb', accent:'#e8e8f0',bright:'#ffffff', o1:[80,80,100],  o2:[60,60,80],  o3:[200,200,220],glow:'rgba(220,220,240,0.2)', gs:'rgba(220,220,240,0.08)'},
+  {id:'white', name:'White Orb', accent:'#c8d0e8',bright:'#dde4f5',o1:[80,80,110],  o2:[60,60,90],  o3:[180,190,220],glow:'rgba(200,208,232,0.2)', gs:'rgba(200,208,232,0.08)'},
   {id:'cyan',  name:'Cyan Orb',  accent:'#00e5ff',bright:'#60f4ff',o1:[0,80,120],   o2:[0,60,100],  o3:[0,200,240],  glow:'rgba(0,229,255,0.25)',  gs:'rgba(0,229,255,0.1)'},
 ];
 
+// ── Canvas orb renderer ──
 const canvas=document.getElementById('orb-canvas');
 const ctx=canvas.getContext('2d');
 let fromOrbs={o1:[30,60,140],o2:[20,40,120],o3:[79,158,255]};
-let toTheme=THEMES[0];
-let lp=1;
-const LS=0.032;
-
+let toTheme=THEMES[0];let lp=1;
 function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
 resize();window.addEventListener('resize',resize);
-
 function lerp(a,b,t){return a+(b-a)*t;}
-function lerpC(a,b,t){return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
-function ease(t){return 1-Math.pow(1-t,3);}
-
+function lC(a,b,t){return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
 function draw(){
-  lp=Math.min(1,lp+LS);
-  const e=ease(lp);
-  const c1=lerpC(fromOrbs.o1,toTheme.o1,e);
-  const c2=lerpC(fromOrbs.o2,toTheme.o2,e);
-  const c3=lerpC(fromOrbs.o3,toTheme.o3,e);
-  const w=canvas.width,h=canvas.height;
-  ctx.clearRect(0,0,w,h);
+  lp=Math.min(1,lp+0.032);const e=1-Math.pow(1-lp,3);
+  const c1=lC(fromOrbs.o1,toTheme.o1,e),c2=lC(fromOrbs.o2,toTheme.o2,e),c3=lC(fromOrbs.o3,toTheme.o3,e);
+  const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);
   const g1=ctx.createRadialGradient(w*.2,h*.1,0,w*.2,h*.1,w*.55);
-  g1.addColorStop(0,`rgba(${c1[0]|0},${c1[1]|0},${c1[2]|0},0.45)`);
-  g1.addColorStop(1,'rgba(0,0,0,0)');
+  g1.addColorStop(0,`rgba(${c1[0]|0},${c1[1]|0},${c1[2]|0},0.45)`);g1.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g1;ctx.fillRect(0,0,w,h);
   const g2=ctx.createRadialGradient(w*.8,h*.85,0,w*.8,h*.85,w*.45);
-  g2.addColorStop(0,`rgba(${c2[0]|0},${c2[1]|0},${c2[2]|0},0.3)`);
-  g2.addColorStop(1,'rgba(0,0,0,0)');
+  g2.addColorStop(0,`rgba(${c2[0]|0},${c2[1]|0},${c2[2]|0},0.3)`);g2.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g2;ctx.fillRect(0,0,w,h);
   const g3=ctx.createRadialGradient(w*.6,h*.35,0,w*.6,h*.35,w*.3);
-  g3.addColorStop(0,`rgba(${c3[0]|0},${c3[1]|0},${c3[2]|0},0.06)`);
-  g3.addColorStop(1,'rgba(0,0,0,0)');
+  g3.addColorStop(0,`rgba(${c3[0]|0},${c3[1]|0},${c3[2]|0},0.06)`);g3.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g3;ctx.fillRect(0,0,w,h);
   requestAnimationFrame(draw);
 }
 draw();
-
 function applyTheme(t){
   fromOrbs={o1:[...toTheme.o1],o2:[...toTheme.o2],o3:[...toTheme.o3]};
   toTheme=t;lp=0;
   const r=document.documentElement;
-  r.style.setProperty('--accent',t.accent);
-  r.style.setProperty('--accent-bright',t.bright);
-  r.style.setProperty('--accent-glow',t.glow);
-  r.style.setProperty('--accent-glow-soft',t.gs);
+  r.style.setProperty('--accent',t.accent);r.style.setProperty('--accent-bright',t.bright);
+  r.style.setProperty('--accent-glow',t.glow);r.style.setProperty('--accent-glow-soft',t.gs);
   localStorage.setItem('gradix_theme',t.id);
 }
 function loadTheme(){const s=localStorage.getItem('gradix_theme');applyTheme(THEMES.find(t=>t.id===s)||THEMES[0]);}
 
-// App
+// ── Dark / Light ──
+function toggleDarkLight(){
+  const isLight=document.body.classList.contains('light');
+  document.body.classList.toggle('light',!isLight);
+  const k=document.getElementById('dl-knob');if(k)k.textContent=isLight?'🌙':'☀️';
+  localStorage.setItem('gradix_light',isLight?'0':'1');
+}
+function initDarkLight(){
+  if(localStorage.getItem('gradix_light')==='1'){
+    document.body.classList.add('light');
+    const k=document.getElementById('dl-knob');if(k)k.textContent='☀️';
+  }
+}
+
+// ── App state ──
 const SUBJECTS=['English','Urdu','Maths','Computer','Chemistry','Islamiyat','Physics','Statistics','Biology','Other'];
 let activeTab='home',view='dashboard',editId=null,detailId=null,newStep=1,newName='';
-let subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}],subjIdCounter=2,showConfirmDelete=false;
+let subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}],sid=2,showDel=false;
+let detailTab='result'; // 'result' | 'insights'
 
 function getGrade(p){return p>=90?'A+':p>=80?'A':p>=70?'B':p>=60?'C':p>=50?'D':p>=40?'E':'F';}
 function badgeClass(g){return'badge badge-'+(g==='A+'?'Aplus':g);}
@@ -242,6 +330,174 @@ function calcOverall(subs){
   return{totalObtained:tot,grandTotal:grand,percentage:p,grade:getGrade(p),passFail:p>=40&&subs.every(s=>(Number(s.obtained||0)/Number(s.total||100)*100)>=40)};
 }
 
+// ── Local Insights Engine (no internet needed) ──
+function generateInsights(r){
+  const subs=r.subjects;
+  const overall=r.overall;
+  const sorted=[...subs].sort((a,b)=>b.percentage-a.percentage);
+  const best=sorted[0],worst=sorted[sorted.length-1];
+  const failing=subs.filter(s=>s.percentage<40);
+  const nearFail=subs.filter(s=>s.percentage>=40&&s.percentage<50);
+  const canImprove=subs.filter(s=>s.percentage>=50&&s.percentage<70);
+  const strong=subs.filter(s=>s.percentage>=80);
+  const pct=overall.percentage;
+
+  // Score 0-100 based on overall % + distribution
+  const score=Math.round(Math.min(100,Math.max(0,pct*0.85+strong.length*3-failing.length*8)));
+
+  // Verdict
+  let verdict='';
+  if(pct>=90)verdict='Outstanding performance across the board. Keep this momentum going.';
+  else if(pct>=80)verdict='Strong result overall. A little more focus on weaker subjects and you\'re at the top.';
+  else if(pct>=70)verdict='Good solid result. Targeted improvement in a few subjects can push you significantly higher.';
+  else if(pct>=60)verdict='Decent performance. There\'s clear room to improve — a consistent study routine will help.';
+  else if(pct>=50)verdict='You\'ve passed, but there are multiple subjects that need real attention before the next exam.';
+  else if(pct>=40)verdict='Borderline result. Several subjects are at risk — focus on these urgently.';
+  else verdict='This result needs urgent attention. Don\'t be discouraged — a structured plan can turn things around.';
+
+  // Build insight items
+  const strengths=[];
+  const improvements=[];
+  const tips=[];
+
+  // Strengths
+  strong.forEach(s=>{
+    const n=sName(s);
+    if(s.percentage>=90)strengths.push({icon:'🌟',text:`<strong>${n}</strong> — Excellent score of ${s.percentage}%. This is your standout subject.`});
+    else strengths.push({icon:'✅',text:`<strong>${n}</strong> — Strong score of ${s.percentage}%. Well done, keep it maintained.`});
+  });
+  if(strong.length===0&&best&&best.percentage>=60){
+    strengths.push({icon:'👍',text:`<strong>${sName(best)}</strong> — Your best subject at ${best.percentage}%. Build on this confidence.`});
+  }
+
+  // Failing subjects
+  failing.forEach(s=>{
+    improvements.push({icon:'🚨',text:`<strong>${sName(s)}</strong> — Score of ${s.percentage}% is below the pass mark (40%). This needs urgent attention before your next exam.`});
+  });
+
+  // Near-fail subjects
+  nearFail.forEach(s=>{
+    improvements.push({icon:'⚠️',text:`<strong>${sName(s)}</strong> — ${s.percentage}% is a thin pass. A small drop next time could result in a fail here.`});
+  });
+
+  // Can improve subjects
+  canImprove.slice(0,3).forEach(s=>{
+    const gap=70-s.percentage;
+    improvements.push({icon:'📈',text:`<strong>${sName(s)}</strong> — Currently at ${s.percentage}%. Improving by just ${gap.toFixed(0)}% more would bring you to a B grade in this subject.`});
+  });
+
+  // Worst subject tip if not already flagged
+  if(worst&&worst.percentage<80&&!failing.find(x=>x===worst)&&!nearFail.find(x=>x===worst)&&!canImprove.find(x=>x===worst)){
+    improvements.push({icon:'🎯',text:`<strong>${sName(worst)}</strong> — Your lowest-scoring subject at ${worst.percentage}%. Consider giving it extra study time.`});
+  }
+
+  // Tips
+  if(failing.length>0){
+    tips.push({icon:'📚',text:`Focus the majority of your study time on <strong>${failing.map(s=>sName(s)).join(', ')}</strong>. Consistent daily practice of even 30 minutes per subject can make a big difference.`});
+  }
+  if(nearFail.length>0){
+    tips.push({icon:'⏱️',text:`Subjects like <strong>${nearFail.map(s=>sName(s)).join(', ')}</strong> are dangerously close to failing. Revisit past papers and identify which question types cost you the most marks.`});
+  }
+  if(canImprove.length>0){
+    tips.push({icon:'🧠',text:`You\'re close to a higher grade in <strong>${canImprove.slice(0,2).map(s=>sName(s)).join(' and ')}</strong>. Targeted revision on weak topics in these subjects could push you up a full grade.`});
+  }
+  if(strong.length>0){
+    tips.push({icon:'⚖️',text:`Don\'t neglect <strong>${strong.map(s=>sName(s)).join(', ')}</strong> entirely — maintain your strong scores here while you focus energy elsewhere.`});
+  }
+  if(tips.length<2){
+    tips.push({icon:'📝',text:'Try solving at least 2 past papers per subject before your next exam. Seeing real question patterns helps more than re-reading notes.'});
+    tips.push({icon:'🗂️',text:'Break your study into short 25-minute focused sessions with 5-minute breaks (Pomodoro technique). This improves retention significantly.'});
+  }
+
+  return{score,verdict,sorted,strengths,improvements,tips};
+}
+
+function sName(s){return s.subject==='Other'?(s.custom||'Other'):s.subject;}
+
+function barColor(pct){
+  return pct>=80?'#3dffa0':pct>=60?'var(--accent)':pct>=40?'#ffd060':'#ff5a7e';
+}
+
+// ── Render Insights Panel ──
+function renderInsights(r){
+  const ins=generateInsights(r);
+  const {score,verdict,sorted,strengths,improvements,tips}=ins;
+
+  // Score ring
+  const R=52,C=2*Math.PI*R,dash=C*(score/100),gap=C-dash;
+  const sc=score>=80?'#3dffa0':score>=60?'var(--accent)':score>=40?'#ffd060':'#ff5a7e';
+
+  let html=`<div class="insights-panel">
+  <div class="score-wrap">
+    <svg width="130" height="130" viewBox="0 0 130 130" style="position:relative;z-index:1">
+      <circle cx="65" cy="65" r="${R}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/>
+      <circle cx="65" cy="65" r="${R}" fill="none" stroke="${sc}" stroke-width="9"
+        stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"
+        stroke-dashoffset="${(C/4).toFixed(1)}" stroke-linecap="round"
+        style="filter:drop-shadow(0 0 7px ${sc}55);transition:stroke-dasharray 1s ease"/>
+      <text x="65" y="59" text-anchor="middle" font-family="Sora,sans-serif" font-size="24" font-weight="800" fill="${sc}">${score}</text>
+      <text x="65" y="76" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="rgba(200,215,245,0.45)">/100</text>
+    </svg>
+    <div class="score-label">Performance Score</div>
+    <div class="score-verdict">${verdict}</div>
+  </div>`;
+
+  // Subject bars ranked
+  html+=`<div class="insight-section" style="animation-delay:0.06s">
+    <div class="insight-section-head">
+      <div class="insight-icon-wrap" style="background:rgba(79,158,255,0.12)">📊</div>
+      <div><div class="insight-section-title">Subject Ranking</div><div class="insight-section-sub">Best to lowest score</div></div>
+    </div>
+    <div class="subjects-card" style="padding:14px 16px">`;
+  sorted.forEach(s=>{
+    const bw=Math.min(s.percentage,100);
+    html+=`<div class="subj-insight-row">
+      <div class="sir-name">${esc(sName(s))}</div>
+      <div class="sir-bar-wrap"><div class="sir-bar" style="width:${bw}%;background:${barColor(s.percentage)}"></div></div>
+      <div class="sir-pct">${s.percentage}%</div>
+      <div style="flex-shrink:0;margin-left:6px"><span class="${badgeClass(s.grade)}">${s.grade}</span></div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  // Strengths
+  if(strengths.length){
+    html+=`<div class="insight-section" style="animation-delay:0.12s">
+      <div class="insight-section-head">
+        <div class="insight-icon-wrap" style="background:rgba(61,255,160,0.12)">💪</div>
+        <div><div class="insight-section-title">What You Did Well</div><div class="insight-section-sub">Keep it up</div></div>
+      </div>`;
+    strengths.forEach((s,i)=>{html+=`<div class="insight-pill" style="border-left:3px solid rgba(61,255,160,0.35);animation-delay:${0.13+i*0.05}s"><div class="pill-icon">${s.icon}</div><div class="pill-text">${s.text}</div></div>`;});
+    html+=`</div>`;
+  }
+
+  // Improvements
+  if(improvements.length){
+    html+=`<div class="insight-section" style="animation-delay:0.18s">
+      <div class="insight-section-head">
+        <div class="insight-icon-wrap" style="background:rgba(255,90,126,0.12)">🎯</div>
+        <div><div class="insight-section-title">Areas to Improve</div><div class="insight-section-sub">Focus here next time</div></div>
+      </div>`;
+    improvements.forEach((s,i)=>{html+=`<div class="insight-pill" style="border-left:3px solid rgba(255,90,126,0.3);animation-delay:${0.19+i*0.05}s"><div class="pill-icon">${s.icon}</div><div class="pill-text">${s.text}</div></div>`;});
+    html+=`</div>`;
+  }
+
+  // Tips
+  if(tips.length){
+    html+=`<div class="insight-section" style="animation-delay:0.26s">
+      <div class="insight-section-head">
+        <div class="insight-icon-wrap" style="background:rgba(184,127,255,0.12)">💡</div>
+        <div><div class="insight-section-title">Study Tips</div><div class="insight-section-sub">Personalised for this result</div></div>
+      </div>`;
+    tips.forEach((t,i)=>{html+=`<div class="insight-pill" style="animation-delay:${0.27+i*0.06}s"><div class="pill-icon">${t.icon}</div><div class="pill-text">${t.text}</div></div>`;});
+    html+=`</div>`;
+  }
+
+  html+=`<div style="height:8px"></div></div>`;
+  return html;
+}
+
+// ── Render functions ──
 function switchTab(tab){
   activeTab=tab;
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -259,7 +515,7 @@ function render(){
 function renderDashboard(el){
   const results=loadResults();
   let html=`<div class="dash-header"><div><div class="dash-title">My Results</div><div class="dash-subtitle">${results.length} saved result${results.length!==1?'s':''}</div></div></div><div class="grid">`;
-  if(!results.length){html+=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No results yet</div><div class="empty-sub">Tap "+ New Result" to add your first exam result.</div></div>`;}
+  if(!results.length){html+=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No results yet</div><div class="empty-sub">Tap "+ New Result" to add your first exam result and track your performance.</div></div>`;}
   else{results.forEach((r,i)=>{html+=`<div class="card" style="animation-delay:${i*.05}s" onclick="openDetail('${r.id}')"><div class="card-name">${esc(r.name)}</div><div class="card-pct">${r.overall.percentage}%</div><div class="card-marks">${r.overall.totalObtained} / ${r.overall.grandTotal} marks</div><div class="card-footer"><span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span><span class="card-meta">${r.subjects.length} subject${r.subjects.length!==1?'s':''} · ${fmtDate(r.date)}</span></div></div>`;});}
   html+='</div>';el.innerHTML=html;
 }
@@ -292,24 +548,115 @@ function renderSubjectRow(s){
 
 function renderDetail(el){
   const r=loadResults().find(x=>x.id===detailId);if(!r){goHome();return;}
-  let html=`<div class="detail-header"><button class="back-btn" onclick="goHome()">←</button><input class="detail-name-input" id="detail-name" value="${esc(r.name)}" onchange="updateDetailName(this.value)" onblur="updateDetailName(this.value)"></div>
-  <div class="detail-hero"><div class="detail-pct">${r.overall.percentage}%</div><div class="detail-marks">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div><div class="detail-badges"><span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span><span class="pass-badge ${r.overall.passFail?'pass':'fail'}">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span></div></div>
-  <div class="section-label">Subject Breakdown</div><div class="subjects-card"><table class="subject-table"><thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead><tbody>`;
-  r.subjects.forEach(s=>{const n=s.subject==='Other'?(s.custom||'Other'):s.subject;html+=`<tr><td style="font-weight:500">${esc(n)}</td><td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td><td>${s.percentage}%</td><td><span class="${badgeClass(s.grade)}">${s.grade}</span></td><td><div class="prog-wrap"><div class="prog-fill" style="width:${Math.min(s.percentage,100)}%"></div></div></td></tr>`;});
-  html+=`</tbody></table></div><div class="detail-actions"><button class="btn btn-ghost" onclick="editResult('${r.id}')">✏️ Edit</button><button class="btn btn-danger" onclick="toggleConfirm()">🗑️ Delete</button><button class="btn btn-print btn-sm" onclick="printResult('${r.id}')">🖨 Print / PDF</button></div>
-  <div id="confirm-box" style="display:${showConfirmDelete?'block':'none'}"><div class="confirm-box"><div class="confirm-text">Delete "<strong>${esc(r.name)}</strong>"? This cannot be undone.</div><div class="confirm-actions"><button class="btn btn-ghost btn-sm" onclick="toggleConfirm()">Cancel</button><button class="btn btn-danger btn-sm" onclick="deleteResult('${r.id}')">Delete</button></div></div></div>`;
+  const isResult=detailTab==='result';
+  let html=`
+  <div class="detail-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <input class="detail-name-input" id="detail-name" value="${esc(r.name)}" onchange="updateDetailName(this.value)" onblur="updateDetailName(this.value)">
+  </div>
+  <div class="view-toggle-wrap">
+    <div class="view-toggle">
+      <button class="vtb ${isResult?'active':''}" onclick="switchDetailTab('result')">📋 Result</button>
+      <button class="vtb ${!isResult?'active':''}" onclick="switchDetailTab('insights')">✨ Insights</button>
+    </div>
+  </div>`;
+
+  if(isResult){
+    html+=`<div style="animation:cardIn 0.35s ease both">
+    <div class="detail-hero">
+      <div class="detail-pct">${r.overall.percentage}%</div>
+      <div class="detail-marks">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
+      <div class="detail-badges"><span class="${badgeClass(r.overall.grade)}">${r.overall.grade}</span><span class="pass-badge ${r.overall.passFail?'pass':'fail'}">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span></div>
+    </div>
+    <div class="section-label">Subject Breakdown</div>
+    <div class="subjects-card"><table class="subject-table"><thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Bar</th></tr></thead><tbody>`;
+    r.subjects.forEach(s=>{const n=s.subject==='Other'?(s.custom||'Other'):s.subject;html+=`<tr><td style="font-weight:500">${esc(n)}</td><td style="color:var(--text-secondary)">${s.obtained}/${s.total}</td><td>${s.percentage}%</td><td><span class="${badgeClass(s.grade)}">${s.grade}</span></td><td><div class="prog-wrap"><div class="prog-fill" style="width:${Math.min(s.percentage,100)}%"></div></div></td></tr>`;});
+    html+=`</tbody></table></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost btn-sm" onclick="editResult('${r.id}')">✏️ Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="toggleDel()">🗑️ Delete</button>
+      <button class="btn btn-print btn-sm" onclick="printResult('${r.id}')">🖨️ Print / PDF</button>
+    </div>
+    <div id="confirm-box" style="display:${showDel?'block':'none'}"><div class="confirm-box"><div class="confirm-text">Delete "<strong>${esc(r.name)}</strong>"? This cannot be undone.</div><div class="confirm-actions"><button class="btn btn-ghost btn-sm" onclick="toggleDel()">Cancel</button><button class="btn btn-danger btn-sm" onclick="deleteResult('${r.id}')">Delete</button></div></div></div>
+    </div>`;
+  } else {
+    html+=renderInsights(r);
+  }
   el.innerHTML=html;
 }
 
+function switchDetailTab(tab){
+  detailTab=tab;
+  const main=document.getElementById('main-content');
+  if(main){main.style.opacity='0.4';setTimeout(()=>{main.style.opacity='';main.style.transition='opacity 0.18s ease';renderDetail(main);setTimeout(()=>{main.style.transition='';},200);},110);}
+}
+
+// ── Print ──
+function printResult(id){
+  const r=loadResults().find(x=>x.id===id);if(!r)return;
+  const tid=localStorage.getItem('gradix_theme')||'blue';
+  const theme=THEMES.find(t=>t.id===tid)||THEMES[0];
+  const [r1,g1,b1]=theme.o1,[r2,g2,b2]=theme.o2;
+  const dateStr=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const passColor=r.overall.passFail?'#3dffa0':'#ff5a7e';
+  const gCol=g=>g==='A+'?'#3dffa0':g==='A'?theme.accent:g==='B'?'#b87fff':g==='C'?'#ffd060':g==='D'?'#ff9a45':g==='E'?'#ff8fa7':'#ff5a7e';
+  const gradeCol=gCol(r.overall.grade);
+  const subRows=r.subjects.map(s=>{
+    const n=s.subject==='Other'?(s.custom||'Other'):s.subject;const gc=gCol(s.grade);const bw=Math.min(s.percentage,100);
+    return`<tr><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);font-weight:500;color:#e8f0fe">${n}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);color:rgba(200,215,245,0.65)">${s.obtained}/${s.total}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);color:#e8f0fe">${s.percentage}%</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><span style="padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:${gc}22;color:${gc};border:1px solid ${gc}44">${s.grade}</span></td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px"><div style="width:${bw}%;height:100%;background:${theme.accent};border-radius:2px"></div></div></td></tr>`;
+  }).join('');
+  const pw=window.open('','_blank');if(!pw)return;
+  pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Gradix — ${r.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>*{box-sizing:border-box;margin:0;padding:0}html,body{background:#040810;color:#e8f0fe;font-family:'Outfit',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}@media print{.np{display:none!important}}</style>
+  </head><body>
+  <div style="max-width:700px;margin:0 auto;padding:36px 28px;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(${r1},${g1},${b1},0.45) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(${r2},${g2},${b2},0.3) 0%,transparent 55%),linear-gradient(160deg,#040810 0%,#070d1c 40%,#0b1428 100%);min-height:100vh">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.08)">
+      <div style="font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 30%,${theme.accent});-webkit-background-clip:text;-webkit-text-fill-color:transparent">Gradix</div>
+      <div style="font-size:12px;color:rgba(150,175,220,0.45)">${dateStr}</div>
+    </div>
+    <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;margin-bottom:22px;color:#e8f0fe">${r.name}</div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;text-align:center;margin-bottom:22px">
+      <div style="font-family:'Sora',sans-serif;font-size:64px;font-weight:800;background:linear-gradient(135deg,#fff 10%,${theme.bright} 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">${r.overall.percentage}%</div>
+      <div style="font-size:14px;color:rgba(200,215,245,0.65);margin-top:8px">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:12px">
+        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${gradeCol}22;color:${gradeCol};border:1px solid ${gradeCol}44">${r.overall.grade}</span>
+        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${passColor}1a;color:${passColor};border:1px solid ${passColor}33">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Subject Breakdown</div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;margin-bottom:28px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr>
+          <th style="font-size:11px;color:rgba(150,175,220,0.4);text-transform:uppercase;padding:12px 12px 8px;text-align:left">Subject</th>
+          <th style="font-size:11px;color:rgba(150,175,220,0.4);text-transform:uppercase;padding:12px 12px 8px;text-align:left">Marks</th>
+          <th style="font-size:11px;color:rgba(150,175,220,0.4);text-transform:uppercase;padding:12px 12px 8px;text-align:left">%</th>
+          <th style="font-size:11px;color:rgba(150,175,220,0.4);text-transform:uppercase;padding:12px 12px 8px;text-align:left">Grade</th>
+          <th style="font-size:11px;color:rgba(150,175,220,0.4);text-transform:uppercase;padding:12px 12px 8px;text-align:left">Bar</th>
+        </tr></thead>
+        <tbody>${subRows}</tbody>
+      </table>
+    </div>
+    <div style="text-align:center;font-size:11px;color:rgba(150,175,220,0.3);padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)">Generated by <span style="color:${theme.accent}">Gradix</span></div>
+    <div class="np" style="text-align:center;margin-top:24px">
+      <button onclick="window.print()" style="padding:11px 28px;border-radius:50px;background:${theme.accent};color:#000;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;border:none;cursor:pointer">🖨️ Print / Save as PDF</button>
+    </div>
+  </div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`);
+  pw.document.close();
+}
+
+// ── Customize ──
 function renderCustomize(){
   document.getElementById('header-btn').innerHTML='';
   const savedId=localStorage.getItem('gradix_theme')||'blue';
-  let html=`<div class="customize-wrap"><div class="customize-title">Customize</div><div class="customize-sub">Choose your orb theme. The gradient transitions fluidly.</div><div class="orb-grid">`;
+  let html=`<div class="customize-wrap"><div class="customize-title">Customize</div><div class="customize-sub">Choose your orb theme. The gradient changes fluidly.</div><div class="orb-grid">`;
   THEMES.forEach(t=>{
     const sel=t.id===savedId;
     const [r1,g1,b1]=t.o1,[r2,g2,b2]=t.o2;
     const bg=`radial-gradient(circle at 35% 35%,rgba(${r1},${g1},${b1},1) 0%,rgba(${r2},${g2},${b2},0.7) 55%,rgba(${r1},${g1},${b1},0.3) 100%)`;
-    html+=`<div class="orb-card ${sel?'selected':''}" onclick="selectTheme('${t.id}')" style="border-color:${sel?t.accent:'var(--glass-border)'};${sel?'border-width:2px;box-shadow:0 0 0 1px '+t.accent+'33':''}" >
+    html+=`<div class="orb-card ${sel?'selected':''}" onclick="selectTheme('${t.id}')" style="border-color:${sel?t.accent:'var(--glass-border)'};${sel?'border-width:2px':''}">
       <div class="orb-preview" style="background:${bg};box-shadow:0 0 20px ${t.glow},0 0 40px ${t.gs}"></div>
       <div class="orb-name" style="${sel?'color:'+t.accent:''}">${t.name.split(' ')[0]}</div>
       ${sel?`<div style="position:absolute;top:7px;right:9px;font-size:11px;color:${t.accent};font-weight:700">✓</div>`:''}
@@ -318,102 +665,37 @@ function renderCustomize(){
   html+=`</div></div>`;
   document.getElementById('main-content').innerHTML=html;
 }
-
 function selectTheme(id){const t=THEMES.find(x=>x.id===id);if(!t)return;applyTheme(t);renderCustomize();}
 
-function goHome(){view='dashboard';editId=null;detailId=null;showConfirmDelete=false;activeTab='home';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-home').classList.add('active');render();}
-function startNew(){view='new';editId=null;newStep=1;newName='';subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}];subjIdCounter=2;render();}
-function openDetail(id){view='detail';detailId=id;showConfirmDelete=false;render();}
-function toggleConfirm(){showConfirmDelete=!showConfirmDelete;render();}
+// ── Actions ──
+function goHome(){view='dashboard';editId=null;detailId=null;showDel=false;detailTab='result';activeTab='home';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-home').classList.add('active');render();}
+function startNew(){view='new';editId=null;newStep=1;newName='';subjects=[{id:1,subject:'',custom:'',obtained:'',total:'100'}];sid=2;render();}
+function openDetail(id){view='detail';detailId=id;showDel=false;detailTab='result';render();}
+function toggleDel(){showDel=!showDel;render();}
 function step1Next(){const v=document.getElementById('result-name').value.trim();if(!v){flashInput('result-name');return;}newName=v;newStep=2;render();}
 function step2Next(){syncDOM();let ok=true;subjects.forEach(s=>{if(!s.subject||s.obtained===''||s.total===''||Number(s.obtained)>Number(s.total))ok=false;});if(!ok){alert('Fill all rows correctly (obtained ≤ total).');return;}newStep=3;render();}
-function addSubject(){syncDOM();subjects.push({id:subjIdCounter++,subject:'',custom:'',obtained:'',total:'100'});refreshRows();}
+function addSubject(){syncDOM();subjects.push({id:sid++,subject:'',custom:'',obtained:'',total:'100'});refreshRows();}
 function removeSubject(id){syncDOM();if(subjects.length<=1)return;subjects=subjects.filter(s=>s.id!==id);refreshRows();}
 function refreshRows(){const c=document.getElementById('subject-rows');if(c)c.innerHTML=subjects.map(s=>renderSubjectRow(s)).join('');}
 function updateSubject(id,f,v){const s=subjects.find(x=>x.id===id);if(s){s[f]=v;if(f==='subject')refreshRows();}}
 function syncDOM(){subjects.forEach(s=>{const el=document.getElementById('srow-'+s.id);if(!el)return;const sel=el.querySelector('select'),inps=el.querySelectorAll('input[type="number"]'),cust=el.querySelector('input[type="text"]');if(sel)s.subject=sel.value;if(inps[0])s.obtained=inps[0].value;if(inps[1])s.total=inps[1].value;if(cust)s.custom=cust.value;});}
-function saveResult(){const calced=calcSubs(subjects.map(s=>({...s,obtained:Number(s.obtained||0),total:Number(s.total||100)})));const overall=calcOverall(calced);const results=loadResults();if(editId){const idx=results.findIndex(r=>r.id===editId);if(idx>-1)results[idx]={...results[idx],name:newName,subjects:calced,overall};}else results.unshift({id:'r_'+Date.now(),name:newName,date:new Date().toISOString(),subjects:calced,overall});saveResults(results);goHome();}
-function editResult(id){const r=loadResults().find(x=>x.id===id);if(!r)return;editId=id;view='new';newStep=1;newName=r.name;subjects=r.subjects.map((s,i)=>({id:i+1,subject:s.subject,custom:s.custom||'',obtained:String(s.obtained),total:String(s.total)}));subjIdCounter=subjects.length+1;render();}
+function saveResult(){
+  const calced=calcSubs(subjects.map(s=>({...s,obtained:Number(s.obtained||0),total:Number(s.total||100)})));
+  const overall=calcOverall(calced);const results=loadResults();
+  if(editId){const idx=results.findIndex(r=>r.id===editId);if(idx>-1)results[idx]={...results[idx],name:newName,subjects:calced,overall};}
+  else results.unshift({id:'r_'+Date.now(),name:newName,date:new Date().toISOString(),subjects:calced,overall});
+  saveResults(results);goHome();
+}
+function editResult(id){const r=loadResults().find(x=>x.id===id);if(!r)return;editId=id;view='new';newStep=1;newName=r.name;subjects=r.subjects.map((s,i)=>({id:i+1,subject:s.subject,custom:s.custom||'',obtained:String(s.obtained),total:String(s.total)}));sid=subjects.length+1;render();}
 function deleteResult(id){saveResults(loadResults().filter(r=>r.id!==id));goHome();}
 function updateDetailName(val){const results=loadResults(),idx=results.findIndex(r=>r.id===detailId);if(idx>-1&&val.trim()){results[idx].name=val.trim();saveResults(results);}}
 function flashInput(id){const el=document.getElementById(id);if(!el)return;el.style.borderColor='var(--red)';el.style.boxShadow='0 0 0 3px rgba(255,90,126,0.15)';setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},1000);}
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-
-function printResult(id){
-  const results=loadResults();
-  const r=results.find(x=>x.id===id);
-  if(!r)return;
-  const tid=localStorage.getItem('gradix_theme')||'blue';
-  const theme=THEMES.find(t=>t.id===tid)||THEMES[0];
-  const [r1,g1,b1]=theme.o1,[r2,g2,b2]=theme.o2;
-
-  const subRows=r.subjects.map(s=>{
-    const n=s.subject==='Other'?(s.custom||'Other'):s.subject;
-    const gc=s.grade==='A+'?'#3dffa0':s.grade==='A'?theme.accent:s.grade==='B'?'#b87fff':s.grade==='C'?'#ffd060':s.grade==='D'?'#ff9a45':s.grade==='E'?'#ff8fa7':'#ff5a7e';
-    const pBarW=Math.min(s.percentage,100);
-    return`<tr><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);font-weight:500">${n}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);color:rgba(200,215,245,0.65)">${s.obtained}/${s.total}</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)">${s.percentage}%</td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><span style="display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:${gc}22;color:${gc};border:1px solid ${gc}44">${s.grade}</span></td><td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07)"><div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden"><div style="width:${pBarW}%;height:100%;background:${theme.accent};border-radius:2px"></div></div></td></tr>`;
-  }).join('');
-
-  const passColor=r.overall.passFail?'#3dffa0':'#ff5a7e';
-  const gradeCol=r.overall.grade==='A+'?'#3dffa0':r.overall.grade==='A'?theme.accent:r.overall.grade==='B'?'#b87fff':r.overall.grade==='C'?'#ffd060':r.overall.grade==='D'?'#ff9a45':r.overall.grade==='E'?'#ff8fa7':'#ff5a7e';
-  const dateStr=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-
-  const win=window.open('','_blank','width=900,height=700');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Gradix - ${r.name}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{background:#040810;color:#e8f0fe;font-family:'Outfit',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    @media print{.no-print{display:none!important}body{margin:0}}
-  </style></head><body>
-  <div style="max-width:720px;margin:0 auto;padding:40px 32px;min-height:100vh;position:relative;background:
-    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(${r1},${g1},${b1},0.45) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%,rgba(${r2},${g2},${b2},0.3) 0%,transparent 55%),
-    linear-gradient(160deg,#040810 0%,#070d1c 40%,#0b1428 100%)">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08)">
-      <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#fff 30%,${theme.accent});-webkit-background-clip:text;-webkit-text-fill-color:transparent">Gradix</div>
-      <div style="font-size:12px;color:rgba(150,175,220,0.5)">${dateStr}</div>
-    </div>
-
-    <!-- Result name -->
-    <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;margin-bottom:24px;color:#e8f0fe">${r.name}</div>
-
-    <!-- Hero stats -->
-    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px;text-align:center;margin-bottom:24px">
-      <div style="font-family:'Sora',sans-serif;font-size:72px;font-weight:800;background:linear-gradient(135deg,#fff 10%,${theme.bright} 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">${r.overall.percentage}%</div>
-      <div style="font-size:15px;color:rgba(200,215,245,0.65);margin-top:8px">${r.overall.totalObtained} obtained out of ${r.overall.grandTotal}</div>
-      <div style="display:flex;justify-content:center;gap:12px;margin-top:14px">
-        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${gradeCol}22;color:${gradeCol};border:1px solid ${gradeCol}44">${r.overall.grade}</span>
-        <span style="padding:4px 14px;border-radius:50px;font-size:12px;font-weight:700;background:${passColor}1a;color:${passColor};border:1px solid ${passColor}33">${r.overall.passFail?'✓ PASS':'✗ FAIL'}</span>
-      </div>
-    </div>
-
-    <!-- Subject breakdown -->
-    <div style="font-size:11px;font-weight:700;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Subject Breakdown</div>
-    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;margin-bottom:32px">
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Subject</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Marks</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">%</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Grade</th><th style="font-size:11px;font-weight:600;color:rgba(150,175,220,0.4);text-transform:uppercase;letter-spacing:0.6px;padding:12px 12px 10px;text-align:left">Bar</th></tr></thead>
-        <tbody>${subRows}</tbody>
-      </table>
-    </div>
-
-    <!-- Footer -->
-    <div style="text-align:center;font-size:12px;color:rgba(150,175,220,0.3);padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)">Generated by <span style="color:${theme.accent}">Gradix</span></div>
-
-    <!-- Print button -->
-    <div class="no-print" style="text-align:center;margin-top:28px">
-      <button onclick="window.print()" style="padding:12px 32px;border-radius:50px;background:${theme.accent};color:#000;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:0 0 20px ${theme.glow}">🖨 Print / Save as PDF</button>
-    </div>
-  </div>
-  </body></html>`);
-  win.document.close();
-}
-
-loadTheme();render();
+initDarkLight();
+loadTheme();
+render();
 </script>
 </body>
 </html>
