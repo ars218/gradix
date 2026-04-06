@@ -1,6 +1,11 @@
 # Changelog — Gradix
 
 All notable changes to this project are documented here.
+---
+## [1.2.1] — Bug Fixes 👾
+
+### Added
+- Print/Save as PDF option is now fully functional.
 
 ---
 ## [1.2.0] — 2st Update - ✨ Insight
