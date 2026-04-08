@@ -5,7 +5,7 @@
 <br/>
 <br/>
 
-[![Open App](https://img.shields.io/badge/Open%20Web%20App-%E2%86%92-4f9eff?style=for-the-badge&labelColor=040810)](https://gradix-tau.vercel.app/)
+[![Open App](https://img.shields.io/badge/Open%20Web%20App-%E2%86%92-4f9eff?style=for-the-badge&labelColor=040810)](https://gradix-app-mauve.vercel.app/)
 &nbsp;
 [![Status](https://img.shields.io/badge/Status-Active-22c55e?style=for-the-badge&labelColor=040810)](#)
 &nbsp;
